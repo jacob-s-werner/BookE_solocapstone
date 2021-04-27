@@ -20,11 +20,11 @@ namespace BookEWebsite.Models
         public double? Tip { get; set; }
         
         [ForeignKey("Artist")]
-        public int ArtistId { get; set; }
+        public int? ArtistId { get; set; }
         public Artist Artist { get; set; }
 
         [ForeignKey("Business")]
-        public int BusinessId { get; set; }
+        public int? BusinessId { get; set; }
         public Business Business { get; set; }
     }
 }

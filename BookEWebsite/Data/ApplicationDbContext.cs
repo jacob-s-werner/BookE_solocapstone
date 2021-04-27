@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookEWebsite.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,6 +14,15 @@ namespace BookEWebsite.Data
             : base(options)
         {
         }
+
+        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Artist> Artists { get; set; }
+        public DbSet<Business> Businesses { get; set; }
+        public DbSet<ArtistAvailability> ArtistAvailabilities { get; set; }
+        public DbSet<BusinessAvailability> BusinessAvailabilities { get; set; }
+        public DbSet<ArtistEvent> ArtistEvents { get; set; }
+        public DbSet<BusinessEvent> BusinessEvents { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
