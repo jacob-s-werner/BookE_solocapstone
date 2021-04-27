@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BookEWebsite.Data;
 using BookEWebsite.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookEWebsite.Controllers
 {
+    [Authorize(Roles = "Artist")]
     public class ArtistsController : Controller
     {
         private readonly ApplicationDbContext _context;
