@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace BookEWebsite.Models
 {
-    public class Artist
+    public class Business
     {
         [Key]
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
         public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
         public string Specialization { get; set; }
         public string Description { get; set; }
-        public bool LookingForGigs { get; set; }
-        public string GroupName { get; set; }
-        public int? SizeOfGroup { get; set; }
+        public int? SeatingCapacity { get; set; }
+        public bool Stage { get; set; }
+        public int? StageCapacity { get; set; }
         public double? HourlyCost { get; set; }
         public double? WeekendHourlyCost { get; set; }
 
