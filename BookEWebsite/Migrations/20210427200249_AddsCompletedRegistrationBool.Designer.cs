@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookEWebsite.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210427183402_ModelsAdded")]
-    partial class ModelsAdded
+    [Migration("20210427200249_AddsCompletedRegistrationBool")]
+    partial class AddsCompletedRegistrationBool
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -63,6 +63,9 @@ namespace BookEWebsite.Migrations
 
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("CompletedRegistration")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -190,6 +193,9 @@ namespace BookEWebsite.Migrations
 
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("CompletedRegistration")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");

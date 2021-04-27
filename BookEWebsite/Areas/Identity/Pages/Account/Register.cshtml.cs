@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using BookEWebsite.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -111,7 +112,21 @@ namespace BookEWebsite.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        if (Input.Role == "Artist")
+                        {
+                            Artist artist = new Artist { IdentityUserId = user.Id, CompletedRegistration = false };
+                            return RedirectToAction("RegisterAccount", "Artist", artist);
+                        }
+                        else if (Input.Role == "Employee")
+                        {
+
+                            Business business = new Business { IdentityUserId = user.Id, CompletedRegistration = false };
+                            return RedirectToAction("RegisterAccount", "Business", business);
+                        }
+                        else
+                        {
+                            return LocalRedirect(returnUrl);
+                        }
                     }
                 }
                 foreach (var error in result.Errors)

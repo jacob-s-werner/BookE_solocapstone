@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookEWebsite.Migrations
 {
-    public partial class ModelsAdded : Migration
+    public partial class AddsCompletedRegistrationBool : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -92,6 +92,7 @@ namespace BookEWebsite.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CompletedRegistration = table.Column<bool>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
@@ -214,6 +215,7 @@ namespace BookEWebsite.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CompletedRegistration = table.Column<bool>(nullable: false),
                     Name = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
                     EmailAddress = table.Column<string>(nullable: true),

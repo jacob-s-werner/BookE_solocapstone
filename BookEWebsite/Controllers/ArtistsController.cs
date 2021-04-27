@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BookEWebsite.Data;
 using BookEWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BookEWebsite.Controllers
 {
@@ -21,10 +22,24 @@ namespace BookEWebsite.Controllers
             _context = context;
         }
 
+        public async Task<IActionResult> RegisterAccount(Artist artist)
+        {
+            _context.Add(artist);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: Artists
         public async Task<IActionResult> Index()
         {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            if (!artist.CompletedRegistration)
+            {
+                return RedirectToAction(nameof(Edit));
+            }
             var applicationDbContext = _context.Artists.Include(a => a.Address).Include(a => a.IdentityUser);
+
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -75,14 +90,11 @@ namespace BookEWebsite.Controllers
         }
 
         // GET: Artists/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var artist = await _context.Artists.FindAsync(id);
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            
             if (artist == null)
             {
                 return NotFound();

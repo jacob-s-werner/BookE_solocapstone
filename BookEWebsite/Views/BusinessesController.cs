@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using BookEWebsite.Data;
 using BookEWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BookEWebsite.Views
 {
@@ -21,10 +22,24 @@ namespace BookEWebsite.Views
             _context = context;
         }
 
+        public async Task<IActionResult> RegisterAccount(Business business)
+        {
+            _context.Add(business);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+        
         // GET: Businesses
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Businesses.Include(b => b.Address).Include(b => b.IdentityUser);
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var business = await _context.Businesses.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            if (!business.CompletedRegistration)
+            {
+                return RedirectToAction(nameof(Edit));
+            }
+            var applicationDbContext = _context.Businesses.Include(a => a.Address).Include(a => a.IdentityUser);
+            
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -75,18 +90,16 @@ namespace BookEWebsite.Views
         }
 
         // GET: Businesses/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var business = await _context.Businesses.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
 
-            var business = await _context.Businesses.FindAsync(id);
             if (business == null)
             {
                 return NotFound();
             }
+
             ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", business.AddressId);
             ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", business.IdentityUserId);
             return View(business);

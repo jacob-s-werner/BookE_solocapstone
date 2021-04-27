@@ -62,6 +62,9 @@ namespace BookEWebsite.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("CompletedRegistration")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -188,6 +191,9 @@ namespace BookEWebsite.Migrations
 
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("CompletedRegistration")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
