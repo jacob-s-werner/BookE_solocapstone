@@ -34,6 +34,7 @@ namespace BookEWebsite.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            
             if (!artist.CompletedRegistration)
             {
                 return RedirectToAction(nameof(Edit));
@@ -94,14 +95,24 @@ namespace BookEWebsite.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
-            
+            ArtistAddressVM artistAddressVM = new ArtistAddressVM
+            {
+                Artist = artist,
+
+                Address = null
+            };
+
+            if (artist.AddressId != null)
+            {
+                artistAddressVM.Address = await _context.Addresses.Where(a => a.Id.Equals(artist.AddressId)).FirstOrDefaultAsync();
+            }
+
             if (artist == null)
             {
                 return NotFound();
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", artist.AddressId);
             ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", artist.IdentityUserId);
-            return View(artist);
+            return View(artistAddressVM);
         }
 
         // POST: Artists/Edit/5
@@ -109,19 +120,33 @@ namespace BookEWebsite.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,PhoneNumber,EmailAddress,Specialization,Description,LookingForGigs,GroupName,SizeOfGroup,HourlyCost,WeekendHourlyCost,IdentityUserId,AddressId")] Artist artist)
+        public async Task<IActionResult> Edit(ArtistAddressVM artistAddressVM)
         {
-            if (id != artist.Id)
-            {
-                return NotFound();
-            }
+            Artist artist = artistAddressVM.Artist;
+            Address address = artistAddressVM.Address;
+            //insert Google Geocoding here to get long,lat (make method/service) add validation so address is required
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (address.Id == 0 || address.Id == null)
+                    {
+                        _context.Add(address);
+                        await _context.SaveChangesAsync();
+                        Address savedAddress = await _context.Addresses.Where(a => a.Equals(address)).FirstOrDefaultAsync();
+                        artist.AddressId = savedAddress.Id;
+                    }
+                    else
+                    {
+                        _context.Update(address);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    artist.CompletedRegistration = true;
                     _context.Update(artist);
                     await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -136,9 +161,7 @@ namespace BookEWebsite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", artist.AddressId);
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", artist.IdentityUserId);
-            return View(artist);
+            return View(artistAddressVM);
         }
 
         // GET: Artists/Delete/5
