@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BookEWebsite.Models.Artist>
+﻿@model BookEWebsite.Models.Artist
 
 @{
     ViewData["Title"] = "Index";
@@ -7,9 +7,6 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -20,87 +17,31 @@
                 @Html.DisplayNameFor(model => model.LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmailAddress)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Specialization)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.LookingForGigs)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.GroupName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SizeOfGroup)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.HourlyCost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.WeekendHourlyCost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdentityUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Address)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
+                @Html.DisplayFor(modelItem => Model.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LastName)
+                @Html.DisplayFor(modelItem => Model.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
+                @Html.DisplayFor(modelItem => Model.LookingForGigs)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EmailAddress)
+                @Html.DisplayFor(modelItem => Model.GroupName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Specialization)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LookingForGigs)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GroupName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SizeOfGroup)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.HourlyCost)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WeekendHourlyCost)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdentityUser.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Address.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@Model.Id">Details</a> |
             </td>
         </tr>
 }

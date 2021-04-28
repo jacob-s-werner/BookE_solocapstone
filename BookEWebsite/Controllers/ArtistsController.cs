@@ -33,15 +33,14 @@ namespace BookEWebsite.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).Include(a => a.Address).SingleOrDefaultAsync();
             
             if (!artist.CompletedRegistration)
             {
                 return RedirectToAction(nameof(Edit));
             }
-            var applicationDbContext = _context.Artists.Include(a => a.Address).Include(a => a.IdentityUser);
 
-            return View(await applicationDbContext.ToListAsync());
+            return View(artist);
         }
 
         // GET: Artists/Details/5
@@ -61,32 +60,6 @@ namespace BookEWebsite.Controllers
                 return NotFound();
             }
 
-            return View(artist);
-        }
-
-        // GET: Artists/Create
-        public IActionResult Create()
-        {
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id");
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: Artists/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,PhoneNumber,EmailAddress,Specialization,Description,LookingForGigs,GroupName,SizeOfGroup,HourlyCost,WeekendHourlyCost,IdentityUserId,AddressId")] Artist artist)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(artist);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", artist.AddressId);
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", artist.IdentityUserId);
             return View(artist);
         }
 
@@ -198,6 +171,37 @@ namespace BookEWebsite.Controllers
         private bool ArtistExists(int id)
         {
             return _context.Artists.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> Availability()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            
+            ArtistAvailability aAvailability = new ArtistAvailability { ArtistId = artist.Id, 
+                aAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync() };
+
+            ViewData["DaysOfWeek"] = new SelectList(new List<string>(){ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" });
+            return View(aAvailability);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Availability(ArtistAvailability aAvailability)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Add(aAvailability);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                        throw;
+                }
+            }
+            return RedirectToAction(nameof(Availability));
         }
     }
 }

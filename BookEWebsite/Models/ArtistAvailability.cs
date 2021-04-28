@@ -19,5 +19,8 @@ namespace BookEWebsite.Models
         [ForeignKey("Artist")]
         public int ArtistId { get; set; }
         public Artist Artist { get; set; }
+
+        [NotMapped]
+        public List<ArtistAvailability> aAvailabilitiesList {get; set;} 
     }
 }
