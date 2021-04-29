@@ -117,9 +117,8 @@ namespace BookEWebsite.Areas.Identity.Pages.Account
                             Artist artist = new Artist { IdentityUserId = user.Id, CompletedRegistration = false };
                             return RedirectToAction("RegisterAccount", "Artists", artist);
                         }
-                        else if (Input.Role == "Employee")
+                        else if (Input.Role == "Business")
                         {
-
                             Business business = new Business { IdentityUserId = user.Id, CompletedRegistration = false };
                             return RedirectToAction("RegisterAccount", "Businesses", business);
                         }
