@@ -19,5 +19,8 @@ namespace BookEWebsite.Models
         [ForeignKey("Business")]
         public int BusinessId { get; set; }
         public Business Business { get; set; }
+
+        [NotMapped]
+        public List<BusinessAvailability> bAvailabilitiesList { get; set; }
     }
 }

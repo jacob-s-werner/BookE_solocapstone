@@ -172,5 +172,38 @@ namespace BookEWebsite.Views
         {
             return _context.Businesses.Any(e => e.Id == id);
         }
+        public async Task<IActionResult> Availability()
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var business = await _context.Businesses.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+
+            BusinessAvailability bAvailability = new BusinessAvailability
+            {
+                BusinessId = business.Id,
+                bAvailabilitiesList = await _context.BusinessAvailabilities.Where(a => a.BusinessId.Equals(business.Id)).ToListAsync()
+            };
+
+            ViewData["DaysOfWeek"] = new SelectList(new List<string>() { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" });
+            return View(bAvailability);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Availability(BusinessAvailability bAvailability)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Add(bAvailability);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Availability));
+        }
     }
 }
