@@ -205,5 +205,35 @@ namespace BookEWebsite.Views
             }
             return RedirectToAction(nameof(Availability));
         }
+
+        public async Task<IActionResult> AvailabilityDelete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var bAvailability = await _context.BusinessAvailabilities.Where(a => a.Id.Equals(id))
+                .FirstOrDefaultAsync();
+            if (bAvailability == null)
+            {
+                return NotFound();
+            }
+
+            return View(bAvailability);
+        }
+
+        [HttpPost, ActionName("AvailabilityDelete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AvailabilityDeleteConfirmed(int id)
+        {
+            var bAvailability = await _context.BusinessAvailabilities.FindAsync(id);
+            _context.BusinessAvailabilities.Remove(bAvailability);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Availability));
+        }
+
+
+
     }
 }
