@@ -34,13 +34,13 @@ namespace BookEWebsite.Views
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var business = await _context.Businesses.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            
             if (!business.CompletedRegistration)
             {
                 return RedirectToAction(nameof(Edit));
             }
-            var applicationDbContext = _context.Businesses.Include(a => a.Address).Include(a => a.IdentityUser);
-            
-            return View(await applicationDbContext.ToListAsync());
+
+            return View(business);
         }
 
         // GET: Businesses/Details/5
