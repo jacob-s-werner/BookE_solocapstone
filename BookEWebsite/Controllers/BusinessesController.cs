@@ -103,7 +103,7 @@ namespace BookEWebsite.Views
             {
                 try
                 {
-                    if (address.Id == 0 || address.Id == null)
+                    if (address.Id == 0)
                     {
                         _context.Add(address);
                         await _context.SaveChangesAsync();
