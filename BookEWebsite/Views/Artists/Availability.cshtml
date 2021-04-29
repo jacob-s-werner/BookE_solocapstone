@@ -16,12 +16,12 @@
             <input type="hidden" asp-for="ArtistId" />
             <div class="form-group">
                 <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
+                <input asp-for="StartTime" asp-format="{0:hh:mm tt}" class="form-control" />
                 <span asp-validation-for="StartTime" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
+                <input asp-for="EndTime" asp-format="{0:hh:mm tt}" class="form-control" />
                 <span asp-validation-for="EndTime" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -67,10 +67,10 @@
                 {
                     <tr>
                         <td>
-                            @item.StartTime
+                            @item.StartTime.ToShortTimeString()
                         </td>
                         <td>
-                            @item.EndTime
+                            @item.EndTime.ToShortTimeString()
                         </td>
                         <td>
                             @item.DayOfWeek
@@ -79,7 +79,7 @@
                             @item.Recurring
                         </td>
                         <td>
-                            <a asp-action="AvailabilityDelete" asp-route-id="@Model.Id">Delete</a>
+                            <a asp-action="AvailabilityDelete" asp-route-id="@item.Id">Delete</a>
                         </td>
                     </tr>
                 }

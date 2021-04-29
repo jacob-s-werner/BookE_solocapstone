@@ -203,5 +203,37 @@ namespace BookEWebsite.Controllers
             }
             return RedirectToAction(nameof(Availability));
         }
+
+        public async Task<IActionResult> AvailabilityDelete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var aAvailability = await _context.ArtistAvailabilities.Where(a => a.Id.Equals(id))
+                .FirstOrDefaultAsync();
+            if (aAvailability == null)
+            {
+                return NotFound();
+            }
+
+            return View(aAvailability);
+        }
+       
+        [HttpPost, ActionName("AvailabilityDelete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AvailabilityDeleteConfirmed(int id)
+        {
+            var aAvailability = await _context.ArtistAvailabilities.FindAsync(id);
+            _context.ArtistAvailabilities.Remove(aAvailability);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Availability));
+        }
+
+
+
+
+
     }
 }
