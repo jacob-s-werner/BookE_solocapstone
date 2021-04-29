@@ -31,6 +31,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Artists" asp-action="Availability">Availability</a>
                             </li>
                         }
+                        else if (this.User.IsInRole("Business"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Businesses" asp-action="Availability">Availability</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
