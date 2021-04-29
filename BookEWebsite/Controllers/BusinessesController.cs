@@ -63,46 +63,29 @@ namespace BookEWebsite.Views
             return View(business);
         }
 
-        // GET: Businesses/Create
-        public IActionResult Create()
-        {
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id");
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: Businesses/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,PhoneNumber,EmailAddress,Specialization,Description,SeatingCapacity,Stage,StageCapacity,HourlyCost,WeekendHourlyCost,IdentityUserId,AddressId")] Business business)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(business);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", business.AddressId);
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", business.IdentityUserId);
-            return View(business);
-        }
-
         // GET: Businesses/Edit/5
         public async Task<IActionResult> Edit()
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var business = await _context.Businesses.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            BusinessAddressVM businessAddressVM = new BusinessAddressVM
+            {
+                Business = business,
+
+                Address = null
+            };
+
+            if (business.AddressId != null)
+            {
+                businessAddressVM.Address = await _context.Addresses.Where(a => a.Id.Equals(business.AddressId)).FirstOrDefaultAsync();
+            }
 
             if (business == null)
             {
                 return NotFound();
             }
-
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", business.AddressId);
             ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", business.IdentityUserId);
-            return View(business);
+            return View(businessAddressVM);
         }
 
         // POST: Businesses/Edit/5
@@ -110,19 +93,33 @@ namespace BookEWebsite.Views
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,PhoneNumber,EmailAddress,Specialization,Description,SeatingCapacity,Stage,StageCapacity,HourlyCost,WeekendHourlyCost,IdentityUserId,AddressId")] Business business)
+        public async Task<IActionResult> Edit(BusinessAddressVM businessAddressVM)
         {
-            if (id != business.Id)
-            {
-                return NotFound();
-            }
+            Business business = businessAddressVM.Business;
+            Address address = businessAddressVM.Address;
+            //insert Google Geocoding here to get long,lat (make method/service) add validation so address is required
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    if (address.Id == 0 || address.Id == null)
+                    {
+                        _context.Add(address);
+                        await _context.SaveChangesAsync();
+                        Address savedAddress = await _context.Addresses.Where(a => a.Equals(address)).FirstOrDefaultAsync();
+                        business.AddressId = savedAddress.Id;
+                    }
+                    else
+                    {
+                        _context.Update(address);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    business.CompletedRegistration = true;
                     _context.Update(business);
                     await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -137,9 +134,7 @@ namespace BookEWebsite.Views
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AddressId"] = new SelectList(_context.Addresses, "Id", "Id", business.AddressId);
-            ViewData["IdentityUserId"] = new SelectList(_context.Users, "Id", "Id", business.IdentityUserId);
-            return View(business);
+            return View(businessAddressVM);
         }
 
         // GET: Businesses/Delete/5
