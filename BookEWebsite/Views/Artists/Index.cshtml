@@ -51,28 +51,77 @@
 </div>
 
 <script>
+    var map;
+    var centerCoords = { lat: @ViewBag.SearchLocation.Latitude, lng: @ViewBag.SearchLocation.Longitude };
+    var InfoObject = [];
 
-function initMap() {
+    //var icons = {
+        //    comedy: {
+        //        icon: 'iconpath.png'
+        //    },
+        //    music: {
+        //        icon: ''
+        //    },
+        //    sports: {
+        //        icon: ''
+        //    },
+        //};
+    window.onload = function () {
+        initMap();
+    }
 
-    var myLatLng = { lat: @ViewBag.SearchLocation.Latitude, lng: @ViewBag.SearchLocation.Longitude };
-
-    // Create a map object and specify the DOM element
-    // for display.
-    var map = new google.maps.Map(document.getElementById('carte'), {
-        center: myLatLng,
-        zoom: 14
-    });
-
-    // Create a marker and set its position.
-
-   @foreach(var item in ViewBag.BusinessMarkers){
-     <text>
-        var marker = new google.maps.Marker({
-          map: map,
-          position: { lat: @item.Address.Latitude, lng: @item.Address.Longitude },
-          title: 'Hello World!'
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map_canvas'), {
+            center: centerCoords,
+            zoom: 15
         });
-    </text>
+
+        addMarkerInfo();
     }
+
+    var markersOnMap = [
+        @foreach (var business in ViewBag.BusinessMarkers) {
+            <text>
+            {
+                placeName: '@business.Name'
+                LatLng: [{ lat: @business.Address.Latitude, lng: @business.Address.Longitude }],
+                type: '@business.Specialization'
+            },
+            </text>
+            }
+    ];
+
+    function addMarkerInfo() {
+        for (var i = 0; i < markersOnMap.length; i++) {
+            var contentString = '<h3>' + markersOnMap[i].placeName + '</h3>'
+
+            const marker = new google.maps.Marker({
+                position: markersOnMap[i].LatLng[0],
+                //  icon: icons[markersOnMap[i].type].icon,
+                map: map
+            });
+
+            const infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            marker.addListener('click', function () {
+                closeOtherInfo();
+                infowindow.open(map, marker);
+                InfoObject[0] = infowindow;
+
+            })
+        }
     }
+
+    function closeOtherInfo() {
+        if (InfoObject.length > 0) {
+            InfoObject[0].set("marker", null);
+            InfoObject[0].close();
+            InfoObject[0].length = 0;
+        }
+    };
+</script>
+<script async defer
+        src='https://maps.googleapis.com/maps/api/js?key={@Secrets.GOOGLE_API_KEY}&callback=initMap'>
 </script>
