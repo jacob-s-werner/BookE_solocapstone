@@ -101,7 +101,7 @@ namespace BookEWebsite.Views
         {
             Business business = businessAddressVM.Business;
             Address address = businessAddressVM.Address;
-            //insert Google Geocoding here to get long,lat (make method/service) add validation so address is required
+            address = await _gMapService.ConvertStreetToLongLat(address);
 
             if (ModelState.IsValid)
             {

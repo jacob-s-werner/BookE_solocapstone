@@ -46,3 +46,33 @@
         </tr>
     </tbody>
 </table>
+<div id="map_wrapper">
+    <div id="map_canvas" class="mapping"></div>
+</div>
+
+<script>
+
+function initMap() {
+
+    var myLatLng = { lat: @ViewBag.SearchLocation.Latitude, lng: @ViewBag.SearchLocation.Longitude };
+
+    // Create a map object and specify the DOM element
+    // for display.
+    var map = new google.maps.Map(document.getElementById('carte'), {
+        center: myLatLng,
+        zoom: 14
+    });
+
+    // Create a marker and set its position.
+
+   @foreach(var item in ViewBag.BusinessMarkers){
+     <text>
+        var marker = new google.maps.Marker({
+          map: map,
+          position: { lat: @item.Address.Latitude, lng: @item.Address.Longitude },
+          title: 'Hello World!'
+        });
+    </text>
+    }
+    }
+</script>

@@ -33,15 +33,28 @@ namespace BookEWebsite.Controllers
         }
 
         // GET: Artists
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(double? searchLat = null, double? searchLong = null)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).Include(a => a.Address).SingleOrDefaultAsync();
-            
+
             if (!artist.CompletedRegistration)
             {
                 return RedirectToAction(nameof(Edit));
             }
+
+            if (searchLat == null || searchLong == null)
+            {
+                searchLat = artist.Address.Latitude;
+                searchLong = artist.Address.Longitude;
+            }
+
+            ViewData["SearchLocation"] = new
+            {
+                Latitude = searchLat,
+                Longitude = searchLong
+            };
+            ViewData["BusinessMarkers"] = await _context.Businesses.Include(a => a.Address).ToListAsync();
 
             return View(artist);
         }
@@ -100,7 +113,7 @@ namespace BookEWebsite.Controllers
         {
             Artist artist = artistAddressVM.Artist;
             Address address = artistAddressVM.Address;
-            //insert Google Geocoding here to get long,lat (make method/service) add validation so address is required
+            address = await _gMapService.ConvertStreetToLongLat(address);
 
             if (ModelState.IsValid)
             {

@@ -22,7 +22,7 @@ namespace BookEWebsite.Services.GoogleMapsSvc
             var geoCodingEngine = GoogleMaps.Geocode;
             GeocodingRequest geocodeRequest = new GeocodingRequest
             {
-                Address = $"{address.Street1}, {address.City}, {address.State} {address.ZipCode}",
+                Address = $"{address.Street1}, {address.Street2}, {address.City}, {address.State} {address.ZipCode}",
                 ApiKey = Secrets.GOOGLE_API_KEY,
             };
 
