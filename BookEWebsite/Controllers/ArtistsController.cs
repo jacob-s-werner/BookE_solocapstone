@@ -49,11 +49,9 @@ namespace BookEWebsite.Controllers
                 searchLong = artist.Address.Longitude;
             }
 
-            ViewData["SearchLocation"] = new
-            {
-                Latitude = searchLat,
-                Longitude = searchLong
-            };
+            artist.CenterLatitude = searchLat;
+            artist.CenterLongitude = searchLong;
+
             ViewData["BusinessMarkers"] = await _context.Businesses.Include(a => a.Address).ToListAsync();
 
             return View(artist);

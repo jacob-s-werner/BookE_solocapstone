@@ -7,52 +7,57 @@
 
 <h1>Index</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LookingForGigs)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GroupName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => Model.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.LookingForGigs)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => Model.GroupName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@Model.Id">Details</a> |
-            </td>
-        </tr>
-    </tbody>
-</table>
-<div id="map_wrapper">
-    <div id="map_canvas" class="mapping"></div>
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LookingForGigs)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GroupName)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.LookingForGigs)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.GroupName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@Model.Id">Details</a> |
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div id="map_wrapper" class="container">
+    <div id="map_canvas" class="map_canvas">here</div>
 </div>
 
 <script>
     var map;
-    var centerCoords = { lat: @ViewBag.SearchLocation.Latitude, lng: @ViewBag.SearchLocation.Longitude };
+    var centerCoords = {
+        lat: @Model.CenterLatitude,
+        lng: @Model.CenterLongitude,
+    };
     var InfoObject = [];
 
     //var icons = {
@@ -66,18 +71,15 @@
         //        icon: ''
         //    },
         //};
-    window.onload = function () {
-        initMap();
-    }
 
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map_canvas'), {
-            center: centerCoords,
+            center: new google.maps.LatLng(centerCoords),
             zoom: 15
         });
 
         addMarkerInfo();
-    }
+    };
 
     var markersOnMap = [
         @foreach (var business in ViewBag.BusinessMarkers) {
@@ -93,7 +95,7 @@
 
     function addMarkerInfo() {
         for (var i = 0; i < markersOnMap.length; i++) {
-            var contentString = '<h3>' + markersOnMap[i].placeName + '</h3>'
+            var contentString = '<h3>' + markersOnMap[i].placeName + '</h3>';
 
             const marker = new google.maps.Marker({
                 position: markersOnMap[i].LatLng[0],
@@ -110,18 +112,18 @@
                 infowindow.open(map, marker);
                 InfoObject[0] = infowindow;
 
-            })
-        }
-    }
+            });
+        };
+    };
 
     function closeOtherInfo() {
         if (InfoObject.length > 0) {
             InfoObject[0].set("marker", null);
             InfoObject[0].close();
             InfoObject[0].length = 0;
-        }
+        };
     };
 </script>
 <script async defer
-        src='https://maps.googleapis.com/maps/api/js?key={@Secrets.GOOGLE_API_KEY}&callback=initMap'>
+        src="https://maps.googleapis.com/maps/api/js?key=@Secrets.GOOGLE_API_KEY&callback=initMap">
 </script>

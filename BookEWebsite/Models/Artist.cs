@@ -32,5 +32,10 @@ namespace BookEWebsite.Models
         [ForeignKey("Address")]
         public int? AddressId { get; set; }
         public Address Address { get; set; }
+
+        [NotMapped]
+        public double? CenterLatitude { get; set; }
+        [NotMapped]
+        public double? CenterLongitude { get; set; }
     }
 }
