@@ -9,6 +9,7 @@ using BookEWebsite.Data;
 using BookEWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using BookEWebsite.Services.GoogleMapsSvc;
 
 namespace BookEWebsite.Views
 {
@@ -16,10 +17,13 @@ namespace BookEWebsite.Views
     public class BusinessesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly GoogleMapsService _gMapService;
 
-        public BusinessesController(ApplicationDbContext context)
+        public BusinessesController(ApplicationDbContext context, GoogleMapsService gMapService)
         {
             _context = context;
+            _gMapService = gMapService;
+
         }
 
         public async Task<IActionResult> RegisterAccount(Business business)

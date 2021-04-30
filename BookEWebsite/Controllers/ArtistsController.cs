@@ -9,6 +9,7 @@ using BookEWebsite.Data;
 using BookEWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using BookEWebsite.Services.GoogleMapsSvc;
 
 namespace BookEWebsite.Controllers
 {
@@ -16,10 +17,12 @@ namespace BookEWebsite.Controllers
     public class ArtistsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly GoogleMapsService _gMapService;
 
-        public ArtistsController(ApplicationDbContext context)
+        public ArtistsController(ApplicationDbContext context, GoogleMapsService gMapService)
         {
             _context = context;
+            _gMapService = gMapService;
         }
 
         public async Task<IActionResult> RegisterAccount(Artist artist)
