@@ -245,7 +245,39 @@ namespace BookEWebsite.Controllers
             return RedirectToAction(nameof(Availability));
         }
 
+        public async Task<IActionResult> BusinessOpenings(int? id, DateTime? dayToCheck = null)
+        {
+            var business = await _context.Businesses.Where(b => b.Id.Equals(id)).Include(b => b.Address).SingleOrDefaultAsync();
+            List<BusinessAvailability> businessAvailabilities;
+            if (dayToCheck == null)
+            {
+                dayToCheck = DateTime.Now;
+            }
+            businessAvailabilities = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.StartTime.ToShortDateString().Equals(dayToCheck.Value.ToShortDateString())).ToListAsync();
 
+            ViewData["DayToCheck"] = dayToCheck;
+            ViewData["BusinessAvailabilities"] = businessAvailabilities;
+            return View(business);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BusinessOpenings(ArtistAvailability aAvailability)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Add(aAvailability);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Availability));
+        }
 
 
 

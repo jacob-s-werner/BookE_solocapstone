@@ -1,0 +1,109 @@
+﻿@model BookEWebsite.Models.Business
+
+@{
+    ViewData["Title"] = "Business Openings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col">
+        <h1>@Model.Name</h1>
+    </div>
+    <div class="col">
+        <h4> @Model.Address.Street1 </h4>
+        @if (@Model.Address.Street2 != null)
+        {
+            <h4> @Model.Address.Street2</h4>
+        }
+        <h4> @Model.Address.City, @Model.Address.State @Model.Address.ZipCode </h4>
+    </div>
+    <div class="col">
+        <h3>Costs:</h3>
+        <h6>Daily - <b>$@Model.HourlyCost</b>/hr</h6>
+        <h6>Weekend - <b>$@Model.WeekendHourlyCost</b>/hr</h6>
+    </div>
+</div>
+<h4>
+    @if (DateTime.Now.Equals(ViewBag.DayToCheck))
+    {
+        @: Today's Openings! :
+    }
+    else
+    {
+        @: Openings for :
+    }
+    @ViewBag.DayToCheck.DayOfWeek , @ViewBag.DayToCheck.ToShortDateString()
+</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="BusinessOpeningsNewDate">
+            @if (true)
+            {
+
+            }
+            <label for="start">Start date:</label>
+            <input type="date" id="start" name="trip-start"
+                   value="2018-07-22"
+                   min="2018-01-01" max="2018-12-31">
+            <div class="form-group">
+                <input type="submit" value="Book" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<h1>Today @DateTime.Now.DayOfWeek</h1>
+<div class="row">
+    <hr />
+    @if (ViewBag.BusinessAvailabilities.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        StartTime
+                    </th>
+                    <th>
+                        EndTime
+                    </th>
+                    <th>
+                        DayOfWeek
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (BusinessAvailability bAvailability in ViewBag.BusinessAvailabilities)
+                {
+                    if (bAvailability.DayOfWeek == DateTime.Now.DayOfWeek.ToString() && bAvailability.Recurring.Equals(true))
+                    {
+                        <tr>
+                            <td>
+                                @bAvailability.StartTime.ToShortTimeString()
+                            </td>
+                            <td>
+                                @bAvailability.EndTime.ToShortTimeString()
+                            </td>
+                            <td>
+                                @bAvailability.DayOfWeek
+                            </td>
+                            @*<td>
+                                    <a asp-action="AvailabilityDelete" asp-route-id="@item.Id">Delete</a>
+                                </td>*@
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h4>No Availabilities currently scheduled...</h4>
+    }
+</div>
+<div>
+    <a asp-action="Index">Back to HomePage</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
