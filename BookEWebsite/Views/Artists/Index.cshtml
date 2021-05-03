@@ -1,5 +1,4 @@
 ﻿@model BookEWebsite.Models.Artist
-
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -39,7 +38,7 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@Model.Id">Details</a> |
+                    <a asp-action="Details" asp-route-id="@Model.Id">Details</a>
                 </td>
             </tr>
         </tbody>
@@ -76,11 +75,32 @@
         };
 
         var markersOnMap = [
-            @foreach(var business in ViewBag.BusinessMarkers) {
+            @foreach (Business business in ViewBag.BusinessMarkers) {
+                string availabilityString = null;
                 @: {
                     @: businessId: @business.Id,
                     @: placeName: '@business.Name',
                     @: description: '@business.Description',
+                    @: todayAvailability:
+                    foreach (BusinessAvailability bAvailability in ViewBag.BusinessAvailabilities)
+                    {
+                        if (bAvailability.Id.Equals(business.Id))
+                        {
+                            if (DateTime.Now.DayOfWeek.ToString() == bAvailability.DayOfWeek)
+                            {
+                                availabilityString += ($"<p>{bAvailability.StartTime.ToShortTimeString()} - {bAvailability.StartTime.ToShortTimeString()}");
+                                //$"<a type=\"btn\" asp-action=\"BookTime\" asp-route-id=\"{bAvailability.Id}\" >Book Now</a></p>");
+                            }
+                        }
+                    }
+                    if (availabilityString == null)
+                    {
+                          @:"<p>No open times today...</p>",
+                    }
+                    else
+                    {
+                        @:@availabilityString,
+                    }
                     @: LatLng: new google.maps.LatLng(@business.Address.Latitude, @business.Address.Longitude),
                     @: type: 'comedy'
                 @: },
@@ -98,6 +118,8 @@
                     '<div class="info-body">' +
                         "<p>" + markersOnMap[i].description + "</p>" +
                         "<h6>Today's Openings</h6>" +
+                        markersOnMap[i].todayAvailability +
+                        '<p><a href="' + '@Url.Action("Book", "Artists")/' + markersOnMap[i].businessId + '" >See More Times</a></p>' +
                     "</div>" +
                 "</div>";
 
@@ -129,6 +151,6 @@
     }
 
 </script>
-<script  src="https://maps.googleapis.com/maps/api/js?key=@Secrets.GOOGLE_API_KEY&callback=initMap"
-      async>
+<script src="https://maps.googleapis.com/maps/api/js?key=@Secrets.GOOGLE_API_KEY&callback=initMap"
+        async>
 </script>
