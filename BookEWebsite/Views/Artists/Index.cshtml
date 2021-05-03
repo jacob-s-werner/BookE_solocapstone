@@ -4,9 +4,6 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h1>Index</h1>
-
 <div class="container">
     <table class="table">
         <thead>
@@ -48,82 +45,90 @@
         </tbody>
     </table>
 </div>
-<div id="map_wrapper" class="container">
-    <div id="map_canvas" class="map_canvas">here</div>
+<div id="map_wrapper">
+    <div id="map" class="map"></div>
 </div>
 
 <script>
     var map;
-    var centerCoords = {
-        lat: @Model.CenterLatitude,
-        lng: @Model.CenterLongitude,
-    };
-    var InfoObject = [];
-
-    //var icons = {
-        //    comedy: {
-        //        icon: 'iconpath.png'
-        //    },
-        //    music: {
-        //        icon: ''
-        //    },
-        //    sports: {
-        //        icon: ''
-        //    },
-        //};
 
     function initMap() {
-        var map = new google.maps.Map(document.getElementById('map_canvas'), {
-            center: new google.maps.LatLng(centerCoords),
-            zoom: 15
+        var InfoObject = [];
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: new google.maps.LatLng( @Model.CenterLatitude,@Model.CenterLongitude),
+            zoom: 13,
         });
 
-        addMarkerInfo();
+        var iconBase =
+            "https://maps.google.com/mapfiles/kml/paddle/";
+
+        var icons = {
+            comedy: {
+                icon: iconBase + "grn-blank.png"
+            },
+            music: {
+                icon: iconBase + "blu-blank.png"
+            },
+            sports: {
+                icon: iconBase + "orange-blank.png"
+            },
+        };
+
+        var markersOnMap = [
+            @foreach(var business in ViewBag.BusinessMarkers) {
+                @: {
+                    @: businessId: @business.Id,
+                    @: placeName: '@business.Name',
+                    @: description: '@business.Description',
+                    @: LatLng: new google.maps.LatLng(@business.Address.Latitude, @business.Address.Longitude),
+                    @: type: 'comedy'
+                @: },
+             }
+        ];
+
+        addMarkerInfo(markersOnMap, icons, InfoObject);
     };
 
-    var markersOnMap = [
-        @foreach (var business in ViewBag.BusinessMarkers) {
-            <text>
-            {
-                placeName: '@business.Name'
-                LatLng: [{ lat: @business.Address.Latitude, lng: @business.Address.Longitude }],
-                type: '@business.Specialization'
-            },
-            </text>
-            }
-    ];
-
-    function addMarkerInfo() {
+    function addMarkerInfo(markersOnMap, icons, InfoObject) {
         for (var i = 0; i < markersOnMap.length; i++) {
-            var contentString = '<h3>' + markersOnMap[i].placeName + '</h3>';
+            var contentString =
+                '<div class="info-window">' +
+                    '<div class="info-heading"><h3>'+ markersOnMap[i].placeName +'</h3></div>'+
+                    '<div class="info-body">' +
+                        "<p>" + markersOnMap[i].description + "</p>" +
+                        "<h6>Today's Openings</h6>" +
+                    "</div>" +
+                "</div>";
 
             const marker = new google.maps.Marker({
-                position: markersOnMap[i].LatLng[0],
-                //  icon: icons[markersOnMap[i].type].icon,
+                position: markersOnMap[i].LatLng,
+                icon: icons[markersOnMap[i].type].icon,
                 map: map
-            });
+            })
 
             const infowindow = new google.maps.InfoWindow({
                 content: contentString
-            });
+            })
 
             marker.addListener('click', function () {
-                closeOtherInfo();
+                closeOtherInfo(InfoObject);
                 infowindow.open(map, marker);
                 InfoObject[0] = infowindow;
 
-            });
-        };
-    };
+            })
+        }
+    }
 
-    function closeOtherInfo() {
+    function closeOtherInfo(InfoObject) {
         if (InfoObject.length > 0) {
             InfoObject[0].set("marker", null);
             InfoObject[0].close();
             InfoObject[0].length = 0;
-        };
-    };
+        }
+    }
+
 </script>
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=@Secrets.GOOGLE_API_KEY&callback=initMap">
+<script  src="https://maps.googleapis.com/maps/api/js?key=@Secrets.GOOGLE_API_KEY&callback=initMap"
+      async>
 </script>

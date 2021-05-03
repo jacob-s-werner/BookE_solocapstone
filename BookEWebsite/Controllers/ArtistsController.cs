@@ -53,7 +53,7 @@ namespace BookEWebsite.Controllers
             artist.CenterLongitude = searchLong;
 
             ViewData["BusinessMarkers"] = await _context.Businesses.Include(a => a.Address).ToListAsync();
-
+            ViewData["BusinessAvailabilities"] = await _context.BusinessAvailabilities.Include(b => b.Business).ToListAsync();
             return View(artist);
         }
 
