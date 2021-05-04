@@ -199,6 +199,9 @@ namespace BookEWebsite.Controllers
                 AAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync() };
 
             ViewData["DaysOfWeek"] = new SelectList( _schedOptService.DaysOfTheWeek);
+            ViewData["Hours"] = new SelectList(_schedOptService.Hours);
+            ViewData["Minutes"] = new SelectList(_schedOptService.Minutes);
+            ViewData["TimeOfDay"] = new SelectList(_schedOptService.TimeOfDay);
             return View(aAvailability);
         }
 
@@ -210,6 +213,14 @@ namespace BookEWebsite.Controllers
             {
                 try
                 {
+                    if (aAvailability.StartTimeOfDay == "PM")
+                    {
+                        aAvailability.StartTime.AddHours(12);
+                    }
+                    if (aAvailability.EndTimeOfDay == "PM")
+                    {
+                        aAvailability.EndTime.AddHours(12);
+                    }
                     _context.Add(aAvailability);
                     await _context.SaveChangesAsync();
                 }

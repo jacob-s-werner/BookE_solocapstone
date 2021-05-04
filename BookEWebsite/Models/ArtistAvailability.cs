@@ -21,6 +21,10 @@ namespace BookEWebsite.Models
         public Artist Artist { get; set; }
 
         [NotMapped]
-        public List<ArtistAvailability> AAvailabilitiesList {get; set;} 
+        public List<ArtistAvailability> AAvailabilitiesList {get; set;}
+        [NotMapped]
+        public string StartTimeOfDay { get; set; }
+        [NotMapped]
+        public string EndTimeOfDay { get; set; }
     }
 }

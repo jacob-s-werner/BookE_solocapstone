@@ -14,15 +14,31 @@
         <form asp-action="Availability">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ArtistId" />
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" asp-format="{0:hh:mm tt}" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
+            <div class="avail-starttime">
+                <span class="form-group">
+                    <label>Start Time </label>
+                    <select asp-for="StartTime.Hour" class="form-control" asp-items="ViewBag.Hours"></select>
+                </span>
+                <span class="form-group">
+                    <label> : </label>
+                    <select asp-for="StartTime.Minute" class="form-control" asp-items="ViewBag.Minutes"></select>
+                </span>
+                <span class="form-group">
+                    <select asp-for="StartTimeOfDay" class="form-control" asp-items="ViewBag.TimeOfDay"></select>
+                </span>
             </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" asp-format="{0:hh:mm tt}" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
+            <div class="avail-endtime">
+                <span class="form-group">
+                    <label>Start Time </label>
+                    <select asp-for="EndTime.Hour" class="form-control" asp-items="ViewBag.Hours"></select>
+                </span>
+                <span class="form-group">
+                    <label> : </label>
+                    <select asp-for="EndTime.Minute" class="form-control" asp-items="ViewBag.Minutes"></select>
+                </span>
+                <span class="form-group">
+                    <select asp-for="EndTimeOfDay" class="form-control" asp-items="ViewBag.TimeOfDay"></select>
+                </span>
             </div>
             <div class="form-group">
                 <label asp-for="DayOfWeek" class="control-label"></label>
