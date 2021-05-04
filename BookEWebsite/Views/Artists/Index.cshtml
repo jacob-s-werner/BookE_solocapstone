@@ -76,34 +76,42 @@
 
         var markersOnMap = [
             @foreach (Business business in ViewBag.BusinessMarkers) {
-                string availabilityString = null;
+                List<string> availStringList = new List<string>();
                 @: {
                     @: businessId: @business.Id,
                     @: placeName: '@business.Name',
                     @: description: '@business.Description',
+                    @: seatingCapacity: '@business.SeatingCapacity',
                     @: todayAvailability:
                     foreach (BusinessAvailability bAvailability in ViewBag.BusinessAvailabilities)
                     {
-                        if (bAvailability.Id.Equals(business.Id))
+                        if (bAvailability.BusinessId.Equals(business.Id))
                         {
-                            if (DateTime.Now.DayOfWeek.ToString() == bAvailability.DayOfWeek)
+                            if (DateTime.Now.DayOfWeek.ToString() == bAvailability.DayOfWeek.ToString())
                             {
-                                availabilityString += ($"<p>{bAvailability.StartTime.ToShortTimeString()} - {bAvailability.StartTime.ToShortTimeString()}");
+                                string timeString = $"{bAvailability.StartTime.ToShortTimeString()} - {bAvailability.EndTime.ToShortTimeString()}";
+                                availStringList.Add(timeString);
                                 //$"<a type=\"btn\" asp-action=\"BookTime\" asp-route-id=\"{bAvailability.Id}\" >Book Now</a></p>");
                             }
                         }
                     }
-                    if (availabilityString == null)
+
+                    if (availStringList.Count() == 0)
                     {
-                          @:"<p>No open times today...</p>",
+                              @:"<p>No open times today...</p>",
                     }
                     else
                     {
-                        @:@availabilityString,
+                        foreach (var strng in availStringList)
+                        {
+                            @: "<p>@strng</p>" +
+                        }
+                            @: "",
                     }
+
                     @: LatLng: new google.maps.LatLng(@business.Address.Latitude, @business.Address.Longitude),
                     @: type: 'comedy'
-                @: },
+                    @: },
              }
         ];
 
@@ -117,7 +125,8 @@
                     '<div class="info-heading"><h3>'+ markersOnMap[i].placeName +'</h3></div>'+
                     '<div class="info-body">' +
                         "<p>" + markersOnMap[i].description + "</p>" +
-                        "<h6>Today's Openings</h6>" +
+                        "<p><b>Seating Capacity:</b>" + " " + markersOnMap[i].seatingCapacity + "</p>" +
+                        "<h6>Today's Hours</h6>" +
                         markersOnMap[i].todayAvailability +
                         '<p><a href="' + '@Url.Action("BusinessOpenings", "Artists")/' + markersOnMap[i].businessId + '" >See More Times</a></p>' +
                     "</div>" +
