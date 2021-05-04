@@ -1,6 +1,7 @@
 using BookEWebsite.ActionFilters;
 using BookEWebsite.Data;
 using BookEWebsite.Services.GoogleMapsSvc;
+using BookEWebsite.Services.ScheduleOptionsSvc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +49,8 @@ namespace BookEWebsite
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddTransient<GoogleMapsService>();
+            services.AddSingleton<ScheduleOptionsService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

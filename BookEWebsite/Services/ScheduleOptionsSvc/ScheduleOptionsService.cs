@@ -18,7 +18,7 @@ namespace BookEWebsite.Services.ScheduleOptionsSvc
             Hours = new string[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
             Minutes = new string[] { "00", "15", "30", "45" };
             TimeOfDay = new string[] { "AM", "PM" };
-            DaysOfTheWeek = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+            DaysOfTheWeek = new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         }
     }
 }

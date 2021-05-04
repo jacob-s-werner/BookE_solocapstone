@@ -10,6 +10,7 @@ using BookEWebsite.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BookEWebsite.Services.GoogleMapsSvc;
+using BookEWebsite.Services.ScheduleOptionsSvc;
 
 namespace BookEWebsite.Controllers
 {
@@ -18,11 +19,13 @@ namespace BookEWebsite.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly GoogleMapsService _gMapService;
+        private readonly ScheduleOptionsService _schedOptService;
 
-        public ArtistsController(ApplicationDbContext context, GoogleMapsService gMapService)
+        public ArtistsController(ApplicationDbContext context, GoogleMapsService gMapService, ScheduleOptionsService schedOptService)
         {
             _context = context;
             _gMapService = gMapService;
+            _schedOptService = schedOptService;
         }
 
         public async Task<IActionResult> RegisterAccount(Artist artist)
