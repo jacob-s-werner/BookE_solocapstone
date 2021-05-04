@@ -257,7 +257,7 @@ namespace BookEWebsite.Controllers
             
             businessAvailabilities = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(dayToCheckDT.DayOfWeek.ToString())).ToListAsync();
 
-            ViewData["DayToCheck"] = dayToCheckDT;
+            business.DayToCheck = dayToCheckDT;
             ViewData["BusinessAvailabilities"] = businessAvailabilities;
             return View(business);
         }

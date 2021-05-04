@@ -24,7 +24,7 @@
     </div>
 </div>
 <h4>
-    @if (DateTime.Now.Equals(ViewBag.DayToCheck))
+    @if (DateTime.Now.Equals(Model.DayToCheck.Value))
     {
         @: Today's Openings! :
     }
@@ -32,7 +32,7 @@
     {
         @: Openings for :
     }
-    @ViewBag.DayToCheck.DayOfWeek , @ViewBag.DayToCheck.ToShortDateString()
+    @Model.DayToCheck.Value.DayOfWeek , @Model.DayToCheck.Value.ToShortDateString()
 </h4>
 <hr />
 <div class="row">
@@ -40,7 +40,7 @@
         <form asp-action="BusinessOpeningsNewDate">
             <input type="hidden" asp-for="@Model.Id" />
             <label for="search-date">Search Date</label>
-            <input type="date" id="search-date" asp-for="DayToCheck" value="@ViewBag.DayToCheck.ToShortDateString()">
+            <input type="date" id="search-date" asp-for="DayToCheck" value="@Model.DayToCheck.Value.ToShortDateString()">
             <div class="form-group">
                 <input type="submit" value="Search" class="btn btn-primary" />
             </div>
