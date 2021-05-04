@@ -23,9 +23,9 @@ namespace BookEWebsite.Models
         [NotMapped]
         public List<BusinessAvailability> BAvailabilitiesList { get; set; }
         [NotMapped]
-        public string TimeOfDay { get; set; }
+        public TimeViewModel StartTimeVM { get; set; }
         [NotMapped]
-        public string EndTimeOfDay { get; set; }
+        public TimeViewModel EndTimeVM { get; set; }
 
     }
 }

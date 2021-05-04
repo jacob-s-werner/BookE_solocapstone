@@ -23,8 +23,8 @@ namespace BookEWebsite.Models
         [NotMapped]
         public List<ArtistAvailability> AAvailabilitiesList {get; set;}
         [NotMapped]
-        public string StartTimeOfDay { get; set; }
+        public TimeViewModel StartTimeVM { get; set; }
         [NotMapped]
-        public string EndTimeOfDay { get; set; }
+        public TimeViewModel EndTimeVM { get; set; }
     }
 }

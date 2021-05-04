@@ -11,15 +11,15 @@ namespace BookEWebsite.Services.ScheduleOptionsSvc
 {
     public class ScheduleOptionsService
     {
-        public string[] Hours { get;}
-        public string[] Minutes { get; }
+        public int[] Hours { get;}
+        public int[] Minutes { get; }
         public string[] TimeOfDay { get; }
         public string[] DaysOfTheWeek { get; }
 
         public ScheduleOptionsService()
         {
-            Hours = new string[] { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
-            Minutes = new string[] { "00", "15", "30", "45" };
+            Hours = new int[] { 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+            Minutes = new int[] { 00, 15, 30, 45 };
             TimeOfDay = new string[] { "AM", "PM" };
             DaysOfTheWeek = new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
         }

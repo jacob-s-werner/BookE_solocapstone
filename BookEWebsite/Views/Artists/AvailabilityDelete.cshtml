@@ -16,25 +16,25 @@
             @Html.DisplayNameFor(model => model.StartTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime.ToShortTimeString())
+            @Model.StartTime.ToShortTimeString()
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.EndTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime.ToShortTimeString())
+            @Model.EndTime.ToShortTimeString()
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DayOfWeek)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DayOfWeek)
+            @Model.DayOfWeek
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Recurring)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Recurring)
+            @Model.Recurring
         </dd>
     </dl>
     
