@@ -31,5 +31,8 @@ namespace BookEWebsite.Models
         [ForeignKey("Address")]
         public int? AddressId { get; set; }
         public Address Address { get; set; }
+
+        [NotMapped]
+        public DateTime? DayToCheck { get; set; }
     }
 }
