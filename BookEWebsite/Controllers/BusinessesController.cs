@@ -179,7 +179,7 @@ namespace BookEWebsite.Views
         {
             return _context.Businesses.Any(e => e.Id == id);
         }
-        public async Task<IActionResult> Availability()
+        public async Task<IActionResult> Availability(string error = null)
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var business = await _context.Businesses.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
@@ -190,7 +190,11 @@ namespace BookEWebsite.Views
                 BAvailabilitiesList = await _context.BusinessAvailabilities.Where(a => a.BusinessId.Equals(business.Id)).ToListAsync()
             };
 
+            ViewData["Error"] = error;
             ViewData["DaysOfWeek"] = new SelectList(_schedOptService.DaysOfTheWeek);
+            ViewData["Hours"] = new SelectList(_schedOptService.Hours);
+            ViewData["Minutes"] = new SelectList(_schedOptService.Minutes);
+            ViewData["TimeOfDay"] = new SelectList(_schedOptService.TimeOfDay);
             return View(bAvailability);
         }
 
@@ -198,10 +202,46 @@ namespace BookEWebsite.Views
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Availability(BusinessAvailability bAvailability)
         {
+            int startHour12 = bAvailability.StartTimeVM.Hour + 12;
+            if (startHour12 == 24)
+            {
+                startHour12 = 0;
+            }
+
+            int endHour12 = bAvailability.EndTimeVM.Hour + 12;
+            if (endHour12 == 24)
+            {
+                endHour12 = 0;
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+
+                    if (bAvailability.StartTimeVM.TimeOfDay == "PM")
+                    {
+                        bAvailability.StartTime = new DateTime(2021, 5, 4, startHour12, bAvailability.StartTimeVM.Minute, 0);
+                    }
+                    else
+                    {
+                        bAvailability.StartTime = new DateTime(2021, 5, 4, bAvailability.StartTimeVM.Hour, bAvailability.StartTimeVM.Minute, 0);
+                    }
+
+                    if (bAvailability.EndTimeVM.TimeOfDay == "PM")
+                    {
+                        bAvailability.EndTime = new DateTime(2021, 5, 4, endHour12, bAvailability.EndTimeVM.Minute, 0);
+                    }
+                    else
+                    {
+                        bAvailability.EndTime = new DateTime(2021, 5, 4, bAvailability.EndTimeVM.Hour, bAvailability.EndTimeVM.Minute, 0);
+                    }
+
+                    if (bAvailability.StartTime > bAvailability.EndTime || bAvailability.StartTime == bAvailability.EndTime)
+                    {
+                        return RedirectToAction("Availability", new { error = "Start Time cannot be after (or equal to) EndTime" });
+                    }
+
                     _context.Add(bAvailability);
                     await _context.SaveChangesAsync();
                 }
