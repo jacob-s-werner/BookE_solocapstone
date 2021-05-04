@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BookEWebsite.Models
 {
-    public class ArtistAvailability
+    public class ArtistAvailability : IAvailability
     {
         [Key]
         public int Id { get; set; }
@@ -21,6 +21,6 @@ namespace BookEWebsite.Models
         public Artist Artist { get; set; }
 
         [NotMapped]
-        public List<ArtistAvailability> aAvailabilitiesList {get; set;} 
+        public List<ArtistAvailability> AAvailabilitiesList {get; set;} 
     }
 }

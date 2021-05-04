@@ -187,7 +187,7 @@ namespace BookEWebsite.Views
             BusinessAvailability bAvailability = new BusinessAvailability
             {
                 BusinessId = business.Id,
-                bAvailabilitiesList = await _context.BusinessAvailabilities.Where(a => a.BusinessId.Equals(business.Id)).ToListAsync()
+                BAvailabilitiesList = await _context.BusinessAvailabilities.Where(a => a.BusinessId.Equals(business.Id)).ToListAsync()
             };
 
             ViewData["DaysOfWeek"] = new SelectList(_schedOptService.DaysOfTheWeek);

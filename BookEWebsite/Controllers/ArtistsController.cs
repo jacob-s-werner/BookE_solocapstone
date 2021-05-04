@@ -196,7 +196,7 @@ namespace BookEWebsite.Controllers
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
             
             ArtistAvailability aAvailability = new ArtistAvailability { ArtistId = artist.Id, 
-                aAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync() };
+                AAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync() };
 
             ViewData["DaysOfWeek"] = new SelectList( _schedOptService.DaysOfTheWeek);
             return View(aAvailability);

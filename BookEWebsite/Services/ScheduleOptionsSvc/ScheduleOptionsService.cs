@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BookEWebsite.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +11,6 @@ namespace BookEWebsite.Services.ScheduleOptionsSvc
     {
         public string[] Hours { get;}
         public string[] Minutes { get; }
-
         public string[] TimeOfDay { get; }
         public string[] DaysOfTheWeek { get; }
 
@@ -19,6 +20,14 @@ namespace BookEWebsite.Services.ScheduleOptionsSvc
             Minutes = new string[] { "00", "15", "30", "45" };
             TimeOfDay = new string[] { "AM", "PM" };
             DaysOfTheWeek = new string[] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+        }
+
+        public bool CheckIfTimeSlotsAvailable(List<IAvailability> availToCheck, List<BusinessEvent> bEvents, List<ArtistEvent> aEvents)
+        {
+
+
+            if (true){ return true; }
+            return false;
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BookEWebsite.Models
 {
-    public class BusinessAvailability
+    public class BusinessAvailability : IAvailability
     {
         [Key]
         public int Id { get; set; }
@@ -21,6 +21,6 @@ namespace BookEWebsite.Models
         public Business Business { get; set; }
 
         [NotMapped]
-        public List<BusinessAvailability> bAvailabilitiesList { get; set; }
+        public List<BusinessAvailability> BAvailabilitiesList { get; set; }
     }
 }
