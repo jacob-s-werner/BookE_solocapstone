@@ -190,7 +190,7 @@ namespace BookEWebsite.Views
                 bAvailabilitiesList = await _context.BusinessAvailabilities.Where(a => a.BusinessId.Equals(business.Id)).ToListAsync()
             };
 
-            ViewData["DaysOfWeek"] = new SelectList(new List<string>() { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" });
+            ViewData["DaysOfWeek"] = new SelectList(_schedOptService.DaysOfTheWeek);
             return View(bAvailability);
         }
 
