@@ -46,6 +46,17 @@
             </div>
         </form>
     </div>
+    @*<div class="col-md-4">
+        <form asp-action="BookTimeSlot">
+            <input type="hidden" asp-for="@Model.Id" />
+
+            <label for="search-date">Search Date</label>
+            <input type="date" id="search-date" asp-for="DayToCheck" value="@Model.DayToCheck.Value.ToShortDateString()">
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>*@
 </div>
 <div class="row">
     <hr />
