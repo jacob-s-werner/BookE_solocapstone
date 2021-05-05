@@ -125,10 +125,10 @@
                     @foreach (var aEvent in ViewBag.ArtistEventBookings)
                     {
                         <tr bgcolor="red">
-                            <td>
+                            <td style="color:white;">
                                 @aEvent.StartTime.ToShortTimeString()
                             </td>
-                            <td>
+                            <td style="color:white;">
                                 @aEvent.EndTime.ToShortTimeString()
                             </td>
                         </tr>
@@ -136,10 +136,10 @@
                     @foreach (var bEvent in ViewBag.BusinessEventBookings)
                     {
                         <tr bgcolor="red">
-                            <td>
+                            <td style="color:white;">
                                 @bEvent.StartTime.ToShortTimeString()
                             </td>
-                            <td>
+                            <td style="color:white;">
                                 @bEvent.EndTime.ToShortTimeString()
                             </td>
                         </tr>
@@ -147,9 +147,13 @@
                 }
                 else
                 {
-                    <tr bgcolor="green"> No Booked Events!</tr>   
+                    <tr bgcolor="green">
+                        <td style="color:white;">
+                            No Booked Events!
+                        </td>
+                    </tr>   
                 }
-                </tbody>
+             </tbody>
         </table>
     }
     else
