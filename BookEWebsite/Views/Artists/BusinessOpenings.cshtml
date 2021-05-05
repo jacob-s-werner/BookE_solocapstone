@@ -10,6 +10,7 @@
         <h1>@Model.Name</h1>
     </div>
     <div class="col">
+        <br />
         <h4> @Model.Address.Street1 </h4>
         @if (@Model.Address.Street2 != null)
         {
@@ -102,17 +103,58 @@
                                 @bAvailability.DayOfWeek
                             </td>
                             @*<td>
-                                    <a asp-action="BookTime" asp-route-id="@item.Id">Delete</a>
-                              </td>*@
+                                      <a asp-action="BookTime" asp-route-id="@item.Id">Delete</a>
+                                </td>*@
                         </tr>
                     }
                 }
             </tbody>
         </table>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Booked Times
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.ArtistEventBookings.Count > 0 || ViewBag.BusinessEventBookings.Count > 0)
+                {
+                    @foreach (var aEvent in ViewBag.ArtistEventBookings)
+                    {
+                        <tr bgcolor="red">
+                            <td>
+                                @aEvent.StartTime.ToShortTimeString()
+                            </td>
+                            <td>
+                                @aEvent.EndTime.ToShortTimeString()
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var bEvent in ViewBag.BusinessEventBookings)
+                    {
+                        <tr bgcolor="red">
+                            <td>
+                                @bEvent.StartTime.ToShortTimeString()
+                            </td>
+                            <td>
+                                @bEvent.EndTime.ToShortTimeString()
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr bgcolor="green"> No Booked Events!</tr>   
+                }
+                </tbody>
+        </table>
     }
     else
     {
-        <h4>No Availabilities currently scheduled...</h4>
+        <h4 >No Availabilities currently scheduled...</h4>
     }
 </div>
 <div>

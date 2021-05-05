@@ -265,7 +265,10 @@ namespace BookEWebsite.Controllers
         public async Task<IActionResult> BusinessOpenings(int? id, string dayToCheck = null, string error = null)
         {
             var business = await _context.Businesses.Where(b => b.Id.Equals(id)).Include(b => b.Address).SingleOrDefaultAsync();
-            List<BusinessAvailability> businessAvailabilities;
+            List<BusinessAvailability> businessAvailabilities = new List<BusinessAvailability>();
+            List<ArtistEvent> eventABookings = new List<ArtistEvent>();
+            List<BusinessEvent> eventBBookings = new List<BusinessEvent>();
+
             if (dayToCheck == null)
             {
                 dayToCheck = DateTime.Now.ToString();
@@ -274,9 +277,14 @@ namespace BookEWebsite.Controllers
 
             businessAvailabilities = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(dayToCheckDT.DayOfWeek.ToString())).ToListAsync();
 
+            eventABookings = await _context.ArtistEvents.Where(b => b.BusinessId.Equals(business.Id) && b.StartTime.Day.Equals(dayToCheckDT.Day)).ToListAsync();
+            eventBBookings = await _context.BusinessEvents.Where(b => b.BusinessId.Equals(business.Id) && b.StartTime.Day.Equals(dayToCheckDT.Day)).ToListAsync();
+
             business.DayToCheck = dayToCheckDT;
             ViewData["Error"] = error;
             ViewData["BusinessAvailabilities"] = businessAvailabilities;
+            ViewData["ArtistEventBookings"] = eventABookings;
+            ViewData["BusinessEventBookings"] = eventBBookings;
             return View(business);
         }
 
