@@ -195,12 +195,15 @@ namespace BookEWebsite.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
-            
-            ArtistAvailability aAvailability = new ArtistAvailability { ArtistId = artist.Id, 
-                AAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync() };
+
+            ArtistAvailability aAvailability = new ArtistAvailability
+            {
+                ArtistId = artist.Id,
+                AAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync()
+            };
 
             ViewData["Error"] = error;
-            ViewData["DaysOfWeek"] = new SelectList( _schedOptService.DaysOfTheWeek);
+            ViewData["DaysOfWeek"] = new SelectList(_schedOptService.DaysOfTheWeek);
             ViewData["Hours"] = new SelectList(_schedOptService.Hours);
             ViewData["Minutes"] = new SelectList(_schedOptService.Minutes);
             ViewData["TimeOfDay"] = new SelectList(_schedOptService.TimeOfDay);
@@ -226,7 +229,7 @@ namespace BookEWebsite.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                        throw;
+                    throw;
                 }
             }
             return RedirectToAction(nameof(Availability));
@@ -248,7 +251,7 @@ namespace BookEWebsite.Controllers
 
             return View(aAvailability);
         }
-       
+
         [HttpPost, ActionName("AvailabilityDelete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AvailabilityDeleteConfirmed(int id)
@@ -268,7 +271,7 @@ namespace BookEWebsite.Controllers
                 dayToCheck = DateTime.Now.ToString();
             }
             DateTime dayToCheckDT = Convert.ToDateTime(dayToCheck);
-            
+
             businessAvailabilities = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(dayToCheckDT.DayOfWeek.ToString())).ToListAsync();
 
             business.DayToCheck = dayToCheckDT;
@@ -293,13 +296,10 @@ namespace BookEWebsite.Controllers
             {
                 try
                 {
-                    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
-
                     var bAvailForDayOfWeek = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(bModel.DayToCheck.Value.DayOfWeek.ToString())).ToListAsync();
-                    var bBookedBusEvents = await _context.BusinessEvents.Where(b=> b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
+                    var bBookedBusEvents = await _context.BusinessEvents.Where(b => b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
                     var bBookedArtEvents = await _context.ArtistEvents.Where(b => b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
-                   
+
                     DateTime startBook = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, bModel.StartTime.Value.Hour, bModel.StartTime.Value.Minute, 00);
                     DateTime endBook = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, bModel.EndTime.Value.Hour, bModel.EndTime.Value.Minute, 00);
 
@@ -307,7 +307,7 @@ namespace BookEWebsite.Controllers
                     {
                         DateTime startAvail = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, avail.StartTime.Hour, avail.StartTime.Minute, 00);
                         DateTime endAvail = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, avail.EndTime.Hour, avail.EndTime.Minute, 00);
-                        
+
                         bool passesAvail = _schedOptService.CompareAvailabilityToBookTimes(startAvail, endAvail, startBook, endBook);
                         if (passesAvail)
                         {
@@ -335,7 +335,7 @@ namespace BookEWebsite.Controllers
                         }
 
                     }
-
+                    return RedirectToAction("CreateEvent", new { bId = bModel.Id, bookStart = startBook, bookEnd = endBook });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -343,8 +343,38 @@ namespace BookEWebsite.Controllers
                 }
             }
 
-            return RedirectToAction(nameof(BusinessOpenings)); // create event and pay
+            return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value});
         }
+
+        public async Task<IActionResult> CreateEvent(int bId, DateTime bookStart, DateTime bookEnd, string error = null)
+        {
+            double totalCost;
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            var business = await _context.Businesses.Where(b => b.Id.Equals(bId)).SingleOrDefaultAsync();
+
+            double totalHours = (bookStart - bookEnd).TotalHours;
+            if (bookStart.DayOfWeek.ToString() == "Saturday" || bookStart.DayOfWeek.ToString() == "Sunday")
+            {
+                totalCost = (totalHours * business.WeekendHourlyCost.Value);
+            }
+            else
+            {
+                totalCost = (totalHours * business.HourlyCost.Value);
+            }
+
+            ArtistEvent artEvent = new ArtistEvent
+            {
+                Artist = artist,
+                Business = business,
+                StartTime = bookStart,
+                EndTime = bookEnd,
+                Cost = totalCost
+            };
+
+            return View(artEvent);
+        }
+
 
     }
 }
