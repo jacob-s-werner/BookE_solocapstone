@@ -418,6 +418,33 @@ namespace BookEWebsite.Controllers
             }
         }
 
+        public async Task<IActionResult> Schedule(DateTime? dayToCheck = null)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            if (dayToCheck == null)
+            {
+                dayToCheck = DateTime.Now;
+            }
+            var businessEvents = await _context.BusinessEvents.Where(b => b.ArtistId.Equals(artist.Id)).ToListAsync();
+            var artistEvents = await _context.ArtistEvents.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync();
+            var artistEventsToday = artistEvents.Where(a => a.StartTime.Day.Equals(dayToCheck.Value.Date)).ToList();
+
+            ViewData["BusinessEvents"] = businessEvents;
+            ViewData["BusinessEventsToday"] = businessEvents.Where(b => b.StartTime.Day.Equals(dayToCheck.Value.Date)).ToList();
+            ViewData["ArtistEvents"] = artistEvents;
+            return View(artistEventsToday);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Schedule(DateTime dayToCheck)
+        {
+
+
+            return RedirectToAction("Schedule", new { dayToCheck = dayToCheck });
+        }
+
 
 
     }
