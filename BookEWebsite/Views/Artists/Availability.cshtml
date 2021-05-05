@@ -10,36 +10,35 @@
 <h4>Add Availability</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
         <h6 style="color:red">@ViewBag.Error</h6>
         <form asp-action="Availability">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ArtistId" />
-            <input type="hidden" asp-for="Recurring" value="true"/>
+            <input type="hidden" asp-for="Booked" value="false"/>
             <div class="avail-starttime">
-                <span class="form-group" style="display: flex;">
+                <span class="form-group">
                     <label>Start Time </label>
                     <select asp-for="StartTimeVM.Hour" class="form-control" asp-items="ViewBag.Hours"></select>
                 </span>
-                <span class="form-group" style="display: flex;">
+                <span class="form-group" >
                     <label> : </label>
                     <select asp-for="StartTimeVM.Minute" class="form-control" asp-items="ViewBag.Minutes"></select>
                 </span>
-                <span class="form-group" style="display: flex;">
+                <span class="form-group" >
                     <label> </label>
                     <select asp-for="StartTimeVM.TimeOfDay" class="form-control" asp-items="ViewBag.TimeOfDay"></select>
                 </span>
             </div>
             <div class="avail-endtime">
-                <span class="form-group" style="display: flex;">
+                <span class="form-group">
                     <label>End Time </label>
                     <select asp-for="EndTimeVM.Hour" class="form-control" asp-items="ViewBag.Hours"></select>
                 </span>
-                <span class="form-group" style="display: flex;">
+                <span class="form-group" >
                     <label> : </label>
                     <select asp-for="EndTimeVM.Minute" class="form-control" asp-items="ViewBag.Minutes"></select>
                 </span>
-                <span class="form-group" style="display: flex;">
+                <span class="form-group">
                     <label> </label>
                     <select asp-for="EndTimeVM.TimeOfDay" class="form-control" asp-items="ViewBag.TimeOfDay"></select>
                 </span>
@@ -53,7 +52,6 @@
                 <input type="submit" value="Add" class="btn btn-primary" />
             </div>
         </form>
-    </div>
 </div>
 <h1>Availability List</h1>
 <div class="row">
@@ -73,7 +71,7 @@
                         @Html.DisplayNameFor(model => model.DayOfWeek)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Recurring)
+                        @Html.DisplayNameFor(model => model.Booked)
                     </th>
                 </tr>
             </thead>
@@ -91,7 +89,7 @@
                             @item.DayOfWeek
                         </td>
                         <td>
-                            @item.Recurring
+                            @item.Booked
                         </td>
                         <td>
                             <a asp-action="AvailabilityDelete" asp-route-id="@item.Id">Delete</a>

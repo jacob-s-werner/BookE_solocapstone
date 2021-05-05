@@ -14,7 +14,7 @@ namespace BookEWebsite.Models
         public DateTime StartTime { get; set; } // Will convert // https://docs.microsoft.com/en-us/dotnet/api/system.datetime.tostring?redirectedfrom=MSDN&view=net-5.0#System_DateTime_ToString_System_String_
         public DateTime EndTime { get; set; }
         public string DayOfWeek { get; set; }
-        public bool Recurring { get; set; }
+        public bool Booked { get; set; }
 
         [ForeignKey("Business")]
         public int BusinessId { get; set; }

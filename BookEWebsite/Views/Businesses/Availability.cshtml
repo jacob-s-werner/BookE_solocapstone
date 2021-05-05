@@ -15,7 +15,7 @@
         <form asp-action="Availability">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="BusinessId" />
-            <input type="hidden" asp-for="Recurring" value="true" />
+            <input type="hidden" asp-for="Booked" value="true" />
             <div class="avail-starttime">
                 <span class="form-group" style="display: flex;">
                     <label>Start Time </label>
@@ -73,7 +73,7 @@
                         @Html.DisplayNameFor(model => model.DayOfWeek)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Recurring)
+                        @Html.DisplayNameFor(model => model.Booked)
                     </th>
                 </tr>
             </thead>
@@ -91,7 +91,7 @@
                             @item.DayOfWeek
                         </td>
                         <td>
-                            @item.Recurring
+                            @item.Booked
                         </td>
                         <td>
                             <a asp-action="AvailabilityDelete" asp-route-id="@item.Id">Delete</a>

@@ -79,7 +79,7 @@
             <tbody>
                 @foreach (BusinessAvailability bAvailability in ViewBag.BusinessAvailabilities)
                 {
-                    if (bAvailability.Recurring.Equals(true))
+                    if (bAvailability.Booked.Equals(false))
                     {
                         <tr>
                             <td>
