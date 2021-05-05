@@ -10,6 +10,8 @@ namespace BookEWebsite.Models
         public int Hour { get; set; }
         public int Minute { get; set; }
         public string TimeOfDay { get; set; }
+        public string Time { get; set; }
         public string Day { get; set; }
+
     }
 }

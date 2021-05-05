@@ -210,40 +210,10 @@ namespace BookEWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Availability(ArtistAvailability aAvailability)
         {
-            int startHour12 = aAvailability.StartTimeVM.Hour + 12;
-            if (startHour12 == 24)
-            {
-                startHour12 = 0;
-            }
-
-            int endHour12 = aAvailability.EndTimeVM.Hour + 12;
-            if (endHour12 == 24)
-            {
-                endHour12 = 0;
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-
-                    if (aAvailability.StartTimeVM.TimeOfDay == "PM")
-                    {
-                        aAvailability.StartTime = new DateTime(2021, 5, 4, startHour12, aAvailability.StartTimeVM.Minute, 0);
-                    }
-                    else
-                    {
-                        aAvailability.StartTime = new DateTime(2021, 5, 4, aAvailability.StartTimeVM.Hour, aAvailability.StartTimeVM.Minute, 0);
-                    }
-
-                    if (aAvailability.EndTimeVM.TimeOfDay == "PM")
-                    {
-                        aAvailability.EndTime = new DateTime(2021, 5, 4, endHour12, aAvailability.EndTimeVM.Minute, 0);
-                    }
-                    else
-                    {
-                        aAvailability.EndTime = new DateTime(2021, 5, 4, aAvailability.EndTimeVM.Hour, aAvailability.EndTimeVM.Minute, 0);
-                    }
 
                     if (aAvailability.StartTime > aAvailability.EndTime || aAvailability.StartTime == aAvailability.EndTime)
                     {

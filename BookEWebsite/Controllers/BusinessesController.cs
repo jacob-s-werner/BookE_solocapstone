@@ -202,40 +202,10 @@ namespace BookEWebsite.Views
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Availability(BusinessAvailability bAvailability)
         {
-            int startHour12 = bAvailability.StartTimeVM.Hour + 12;
-            if (startHour12 == 24)
-            {
-                startHour12 = 0;
-            }
-
-            int endHour12 = bAvailability.EndTimeVM.Hour + 12;
-            if (endHour12 == 24)
-            {
-                endHour12 = 0;
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-
-                    if (bAvailability.StartTimeVM.TimeOfDay == "PM")
-                    {
-                        bAvailability.StartTime = new DateTime(2021, 5, 4, startHour12, bAvailability.StartTimeVM.Minute, 0);
-                    }
-                    else
-                    {
-                        bAvailability.StartTime = new DateTime(2021, 5, 4, bAvailability.StartTimeVM.Hour, bAvailability.StartTimeVM.Minute, 0);
-                    }
-
-                    if (bAvailability.EndTimeVM.TimeOfDay == "PM")
-                    {
-                        bAvailability.EndTime = new DateTime(2021, 5, 4, endHour12, bAvailability.EndTimeVM.Minute, 0);
-                    }
-                    else
-                    {
-                        bAvailability.EndTime = new DateTime(2021, 5, 4, bAvailability.EndTimeVM.Hour, bAvailability.EndTimeVM.Minute, 0);
-                    }
 
                     if (bAvailability.StartTime > bAvailability.EndTime || bAvailability.StartTime == bAvailability.EndTime)
                     {

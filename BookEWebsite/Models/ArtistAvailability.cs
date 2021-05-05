@@ -26,5 +26,7 @@ namespace BookEWebsite.Models
         public TimeViewModel StartTimeVM { get; set; }
         [NotMapped]
         public TimeViewModel EndTimeVM { get; set; }
+        [NotMapped]
+        public TimeSpan TimeHM { get; set; }
     }
 }
