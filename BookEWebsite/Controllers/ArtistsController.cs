@@ -422,16 +422,22 @@ namespace BookEWebsite.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            
+            var today = DateTime.Now;
+            var yesterday = today.AddDays(-1);
+
             if (dayToCheck == null)
             {
-                dayToCheck = DateTime.Now;
+                dayToCheck = today;
             }
-            var businessEvents = await _context.BusinessEvents.Where(b => b.ArtistId.Equals(artist.Id)).ToListAsync();
-            var artistEvents = await _context.ArtistEvents.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync();
-            var artistEventsToday = artistEvents.Where(a => a.StartTime.Day.Equals(dayToCheck.Value.Date)).ToList();
 
+            var businessEvents = await _context.BusinessEvents.Where(b => b.ArtistId.Equals(artist.Id) && b.StartTime.Day > yesterday.Day).Include(b => b.Business).ToListAsync();
+            var artistEvents = await _context.ArtistEvents.Where(a => a.ArtistId.Equals(artist.Id) && a.StartTime.Day > yesterday.Day).Include(b => b.Business).ToListAsync();
+            var artistEventsToday = artistEvents.Where(a => a.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
+
+            ViewData["DayToCheck"] = dayToCheck;
             ViewData["BusinessEvents"] = businessEvents;
-            ViewData["BusinessEventsToday"] = businessEvents.Where(b => b.StartTime.Day.Equals(dayToCheck.Value.Date)).ToList();
+            ViewData["BusinessEventsToday"] = businessEvents.Where(b => b.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
             ViewData["ArtistEvents"] = artistEvents;
             return View(artistEventsToday);
         }
@@ -440,8 +446,6 @@ namespace BookEWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Schedule(DateTime dayToCheck)
         {
-
-
             return RedirectToAction("Schedule", new { dayToCheck = dayToCheck });
         }
 
