@@ -32,7 +32,7 @@
     {
         @: Openings for :
     }
-    @Model.DayToCheck.Value.DayOfWeek , @Model.DayToCheck.Value.ToShortDateString()
+    @Model.DayToCheck.Value.DayOfWeek, @Model.DayToCheck.Value.ToShortDateString()
 </h4>
 <hr />
 <div class="row">
@@ -46,17 +46,25 @@
             </div>
         </form>
     </div>
-    @*<div class="col-md-4">
-        <form asp-action="BookTimeSlot">
+    <div class="col-md-4">
+        <form asp-action="BookTime">
             <input type="hidden" asp-for="@Model.Id" />
-
-            <label for="search-date">Search Date</label>
-            <input type="date" id="search-date" asp-for="DayToCheck" value="@Model.DayToCheck.Value.ToShortDateString()">
+            <input type="hidden" asp-for="@Model.DayToCheck" />
             <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-primary" />
+                <label asp-for="StartTime" class="control-label"></label>
+                <input asp-for="StartTime" asp-format="{0:hh:mm tt}" value="@Model.DayToCheck" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label"></label>
+                <input asp-for="EndTime" asp-format="{0:hh:mm tt}" value="@Model.DayToCheck" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Book Time" class="btn btn-primary" />
             </div>
         </form>
-    </div>*@
+    </div>
 </div>
 <div class="row">
     <hr />

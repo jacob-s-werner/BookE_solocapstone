@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BookEWebsite.Services.GoogleMapsSvc;
 using BookEWebsite.Services.ScheduleOptionsSvc;
+using Stripe;
 
 namespace BookEWebsite.Controllers
 {
@@ -113,7 +114,7 @@ namespace BookEWebsite.Controllers
         public async Task<IActionResult> Edit(ArtistAddressVM artistAddressVM)
         {
             Artist artist = artistAddressVM.Artist;
-            Address address = artistAddressVM.Address;
+            Models.Address address = artistAddressVM.Address;
             address = await _gMapService.ConvertStreetToLongLat(address);
 
             if (ModelState.IsValid)
@@ -124,7 +125,7 @@ namespace BookEWebsite.Controllers
                     {
                         _context.Add(address);
                         await _context.SaveChangesAsync();
-                        Address savedAddress = await _context.Addresses.Where(a => a.Equals(address)).FirstOrDefaultAsync();
+                        Models.Address savedAddress = await _context.Addresses.Where(a => a.Equals(address)).FirstOrDefaultAsync();
                         artist.AddressId = savedAddress.Id;
                     }
                     else
@@ -258,7 +259,7 @@ namespace BookEWebsite.Controllers
             return RedirectToAction(nameof(Availability));
         }
 
-        public async Task<IActionResult> BusinessOpenings(int? id, string dayToCheck = null)
+        public async Task<IActionResult> BusinessOpenings(int? id, string dayToCheck = null, string error = null)
         {
             var business = await _context.Businesses.Where(b => b.Id.Equals(id)).Include(b => b.Address).SingleOrDefaultAsync();
             List<BusinessAvailability> businessAvailabilities;
@@ -283,7 +284,64 @@ namespace BookEWebsite.Controllers
             return RedirectToAction("BusinessOpenings", new { id = id, dayToCheck = dayToString });
         }
 
+        public async Task<IActionResult> BookTime(int? id, Business bModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
 
+                    var bAvailForDayOfWeek = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(bModel.DayToCheck.Value.DayOfWeek.ToString())).ToListAsync();
+                    var bBookedBusEvents = await _context.BusinessEvents.Where(b=> b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
+                    var bBookedArtEvents = await _context.ArtistEvents.Where(b => b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
+                   
+                    DateTime startBook = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, bModel.StartTime.Value.Hour, bModel.StartTime.Value.Minute, 00);
+                    DateTime endBook = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, bModel.EndTime.Value.Hour, bModel.EndTime.Value.Minute, 00);
+
+                    foreach (var avail in bAvailForDayOfWeek)
+                    {
+                        DateTime startAvail = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, avail.StartTime.Hour, avail.StartTime.Minute, 00);
+                        DateTime endAvail = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, avail.EndTime.Hour, avail.EndTime.Minute, 00);
+                        
+                        bool passesAvail = _schedOptService.CompareAvailabilityToBookTimes(startAvail, endAvail, startBook, endBook);
+                        if (passesAvail)
+                        {
+                            bool passesEvents = true;
+                            foreach (var busEvent in bBookedBusEvents)
+                            {
+                                passesEvents = _schedOptService.CompareEventTimesToBookTimes(busEvent.StartTime, busEvent.EndTime, startBook, endBook);
+                                if (passesEvents == false)
+                                {
+                                    return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value, error = "Event already booked during that time" });
+                                }
+                            }
+                            foreach (var artEvent in bBookedArtEvents)
+                            {
+                                passesEvents = _schedOptService.CompareEventTimesToBookTimes(artEvent.StartTime, artEvent.EndTime, startBook, endBook);
+                                if (passesEvents == false)
+                                {
+                                    return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value, error = "Event already booked during that time" });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value, error = "Outside of Availability" });
+                        }
+
+                    }
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(BusinessOpenings)); // create event and pay
+        }
 
     }
 }
