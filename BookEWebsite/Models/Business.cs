@@ -34,5 +34,9 @@ namespace BookEWebsite.Models
 
         [NotMapped]
         public DateTime? DayToCheck { get; set; }
+        [NotMapped]
+        public DateTime? StartTime { get; set; }
+        [NotMapped]
+        public DateTime? EndTime { get; set; }
     }
 }

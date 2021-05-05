@@ -1,0 +1,87 @@
+﻿@model BookEWebsite.Models.ArtistEvent
+
+@{
+    ViewData["Title"] = "CreateEvent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create Artist Event</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="PaymentConfirmation">
+            <input type="hidden" asp-for="@Model.Id" />
+            <input type="hidden" asp-for="@Model.BusinessId" value="@Model.Business.Id" />
+            <input type="hidden" asp-for="@Model.ArtistId" value="@Model.Artist.Id"/>
+            <input type="hidden" asp-for="@Model.StartTime" />
+            <input type="hidden" asp-for="@Model.EndTime" />
+            <input type="hidden" asp-for="@Model.Cost" />
+            <input type="hidden" asp-for="@Model.TimeBooked" value="@DateTime.Now" />
+            <div class="eventinfo">
+                <h4>Event Info</h4>
+                <hr />
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Business.Name)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Business.Name)
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.StartTime)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.StartTime.ToShortTimeString()
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.EndTime)
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.EndTime.ToShortTimeString()
+                    </dd>
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.Cost)
+                    </dt>
+                    <dd class="col-sm-10">
+                        $ @Math.Round(Model.Cost, 2)
+                    </dd>
+                </dl>
+            </div>
+            <div class="form-group">
+                <label asp-for="EventName" class="control-label"></label>
+                <input asp-for="EventName" class="form-control" />
+                <span asp-validation-for="EventName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EventDescription" class="control-label"></label>
+                <input asp-for="EventDescription" style="height:200px; font-size:14pt;" class="form-control" />
+                <span asp-validation-for="EventDescription" class="text-danger"></span>
+            </div>
+            @*<div class="form-group">
+                <label asp-for="Tip" class="control-label"></label>
+                <input asp-for="Tip" class="form-control" placeholder="0" />
+                <span asp-validation-for="Tip" class="text-danger"></span>
+            </div>*@
+            <input type="hidden" name="amount" value="@(Math.Round(Model.Cost,2)*100)" />
+            <input type="hidden" name="description" value="Event Booked for @Model.Artist.FirstName at @Model.Business.Name
+                        for @Model.StartTime.ToShortTimeString() - @Model.EndTime.ToShortTimeString() on @Model.StartTime.DayOfWeek, @Model.StartTime.Date" />
+
+            <script src="//checkout.stripe.com/v2/checkout.js"
+                    class="stripe-button"
+                    data-key="@ViewBag.StripePublishKey"
+                    data-locale="auto"
+                    data-description="Event Booked for @Model.Artist.FirstName at @Model.Business.Name
+                        for @Model.StartTime.ToShortTimeString() - @Model.EndTime.ToShortTimeString() on @Model.StartTime.DayOfWeek, @Model.StartTime.Date"
+                    data-amount="@(Math.Round(Model.Cost,2)*100)">
+            </script>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to HomePage</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

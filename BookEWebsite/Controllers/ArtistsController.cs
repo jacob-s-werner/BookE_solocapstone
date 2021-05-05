@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BookEWebsite.Services.GoogleMapsSvc;
 using BookEWebsite.Services.ScheduleOptionsSvc;
+using Stripe;
 
 namespace BookEWebsite.Controllers
 {
@@ -113,7 +114,7 @@ namespace BookEWebsite.Controllers
         public async Task<IActionResult> Edit(ArtistAddressVM artistAddressVM)
         {
             Artist artist = artistAddressVM.Artist;
-            Address address = artistAddressVM.Address;
+            Models.Address address = artistAddressVM.Address;
             address = await _gMapService.ConvertStreetToLongLat(address);
 
             if (ModelState.IsValid)
@@ -124,7 +125,7 @@ namespace BookEWebsite.Controllers
                     {
                         _context.Add(address);
                         await _context.SaveChangesAsync();
-                        Address savedAddress = await _context.Addresses.Where(a => a.Equals(address)).FirstOrDefaultAsync();
+                        Models.Address savedAddress = await _context.Addresses.Where(a => a.Equals(address)).FirstOrDefaultAsync();
                         artist.AddressId = savedAddress.Id;
                     }
                     else
@@ -194,12 +195,15 @@ namespace BookEWebsite.Controllers
         {
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
-            
-            ArtistAvailability aAvailability = new ArtistAvailability { ArtistId = artist.Id, 
-                AAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync() };
+
+            ArtistAvailability aAvailability = new ArtistAvailability
+            {
+                ArtistId = artist.Id,
+                AAvailabilitiesList = await _context.ArtistAvailabilities.Where(a => a.ArtistId.Equals(artist.Id)).ToListAsync()
+            };
 
             ViewData["Error"] = error;
-            ViewData["DaysOfWeek"] = new SelectList( _schedOptService.DaysOfTheWeek);
+            ViewData["DaysOfWeek"] = new SelectList(_schedOptService.DaysOfTheWeek);
             ViewData["Hours"] = new SelectList(_schedOptService.Hours);
             ViewData["Minutes"] = new SelectList(_schedOptService.Minutes);
             ViewData["TimeOfDay"] = new SelectList(_schedOptService.TimeOfDay);
@@ -210,40 +214,10 @@ namespace BookEWebsite.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Availability(ArtistAvailability aAvailability)
         {
-            int startHour12 = aAvailability.StartTimeVM.Hour + 12;
-            if (startHour12 == 24)
-            {
-                startHour12 = 0;
-            }
-
-            int endHour12 = aAvailability.EndTimeVM.Hour + 12;
-            if (endHour12 == 24)
-            {
-                endHour12 = 0;
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-
-                    if (aAvailability.StartTimeVM.TimeOfDay == "PM")
-                    {
-                        aAvailability.StartTime = new DateTime(2021, 5, 4, startHour12, aAvailability.StartTimeVM.Minute, 0);
-                    }
-                    else
-                    {
-                        aAvailability.StartTime = new DateTime(2021, 5, 4, aAvailability.StartTimeVM.Hour, aAvailability.StartTimeVM.Minute, 0);
-                    }
-
-                    if (aAvailability.EndTimeVM.TimeOfDay == "PM")
-                    {
-                        aAvailability.EndTime = new DateTime(2021, 5, 4, endHour12, aAvailability.EndTimeVM.Minute, 0);
-                    }
-                    else
-                    {
-                        aAvailability.EndTime = new DateTime(2021, 5, 4, aAvailability.EndTimeVM.Hour, aAvailability.EndTimeVM.Minute, 0);
-                    }
 
                     if (aAvailability.StartTime > aAvailability.EndTime || aAvailability.StartTime == aAvailability.EndTime)
                     {
@@ -255,7 +229,7 @@ namespace BookEWebsite.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                        throw;
+                    throw;
                 }
             }
             return RedirectToAction(nameof(Availability));
@@ -277,7 +251,7 @@ namespace BookEWebsite.Controllers
 
             return View(aAvailability);
         }
-       
+
         [HttpPost, ActionName("AvailabilityDelete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AvailabilityDeleteConfirmed(int id)
@@ -288,20 +262,29 @@ namespace BookEWebsite.Controllers
             return RedirectToAction(nameof(Availability));
         }
 
-        public async Task<IActionResult> BusinessOpenings(int? id, string dayToCheck = null)
+        public async Task<IActionResult> BusinessOpenings(int? id, string dayToCheck = null, string error = null)
         {
             var business = await _context.Businesses.Where(b => b.Id.Equals(id)).Include(b => b.Address).SingleOrDefaultAsync();
-            List<BusinessAvailability> businessAvailabilities;
+            List<BusinessAvailability> businessAvailabilities = new List<BusinessAvailability>();
+            List<ArtistEvent> eventABookings = new List<ArtistEvent>();
+            List<BusinessEvent> eventBBookings = new List<BusinessEvent>();
+
             if (dayToCheck == null)
             {
                 dayToCheck = DateTime.Now.ToString();
             }
             DateTime dayToCheckDT = Convert.ToDateTime(dayToCheck);
-            
+
             businessAvailabilities = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(dayToCheckDT.DayOfWeek.ToString())).ToListAsync();
 
+            eventABookings = await _context.ArtistEvents.Where(b => b.BusinessId.Equals(business.Id) && b.StartTime.Day.Equals(dayToCheckDT.Day)).ToListAsync();
+            eventBBookings = await _context.BusinessEvents.Where(b => b.BusinessId.Equals(business.Id) && b.StartTime.Day.Equals(dayToCheckDT.Day)).ToListAsync();
+
             business.DayToCheck = dayToCheckDT;
+            ViewData["Error"] = error;
             ViewData["BusinessAvailabilities"] = businessAvailabilities;
+            ViewData["ArtistEventBookings"] = eventABookings;
+            ViewData["BusinessEventBookings"] = eventBBookings;
             return View(business);
         }
 
@@ -311,6 +294,159 @@ namespace BookEWebsite.Controllers
         {
             string dayToString = dayToCheck.ToString();
             return RedirectToAction("BusinessOpenings", new { id = id, dayToCheck = dayToString });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BookTime(int? id, Business bModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var bAvailForDayOfWeek = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(bModel.DayToCheck.Value.DayOfWeek.ToString())).ToListAsync();
+                    var bBookedBusEvents = await _context.BusinessEvents.Where(b => b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
+                    var bBookedArtEvents = await _context.ArtistEvents.Where(b => b.BusinessId.Equals(bModel.Id) && b.StartTime.Day.Equals(bModel.DayToCheck.Value.Day)).ToListAsync();
+
+                    DateTime startBook = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, bModel.StartTime.Value.Hour, bModel.StartTime.Value.Minute, 00);
+                    DateTime endBook = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, bModel.EndTime.Value.Hour, bModel.EndTime.Value.Minute, 00);
+
+                    foreach (var avail in bAvailForDayOfWeek)
+                    {
+                        DateTime startAvail = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, avail.StartTime.Hour, avail.StartTime.Minute, 00);
+                        DateTime endAvail = new DateTime(bModel.DayToCheck.Value.Year, bModel.DayToCheck.Value.Month, bModel.DayToCheck.Value.Day, avail.EndTime.Hour, avail.EndTime.Minute, 00);
+
+                        bool passesAvail = _schedOptService.CompareAvailabilityToBookTimes(startAvail, endAvail, startBook, endBook);
+                        if (passesAvail)
+                        {
+                            bool passesEvents = true;
+                            foreach (var busEvent in bBookedBusEvents)
+                            {
+                                passesEvents = _schedOptService.CompareEventTimesToBookTimes(busEvent.StartTime, busEvent.EndTime, startBook, endBook);
+                                if (passesEvents == false)
+                                {
+                                    return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value, error = "Event already booked during that time" });
+                                }
+                            }
+                            foreach (var artEvent in bBookedArtEvents)
+                            {
+                                passesEvents = _schedOptService.CompareEventTimesToBookTimes(artEvent.StartTime, artEvent.EndTime, startBook, endBook);
+                                if (passesEvents == false)
+                                {
+                                    return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value, error = "Event already booked during that time" });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value, error = "Outside of Availability" });
+                        }
+
+                    }
+                    return RedirectToAction("CreateEvent", new { bId = bModel.Id, bookStart = startBook, bookEnd = endBook });
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value });
+        }
+
+        public async Task<IActionResult> CreateEvent(int bId, DateTime bookStart, DateTime bookEnd, string error = null)
+        {
+            double totalCost;
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            var business = await _context.Businesses.Where(b => b.Id.Equals(bId)).SingleOrDefaultAsync();
+
+            double totalHours = (bookEnd - bookStart).TotalHours;
+            if (bookStart.DayOfWeek.ToString() == "Saturday" || bookStart.DayOfWeek.ToString() == "Sunday")
+            {
+                totalCost = (totalHours * business.WeekendHourlyCost.Value);
+            }
+            else
+            {
+                totalCost = (totalHours * business.HourlyCost.Value);
+            }
+
+            ArtistEvent artEvent = new ArtistEvent
+            {
+                Artist = artist,
+                Business = business,
+                StartTime = bookStart,
+                EndTime = bookEnd,
+                Cost = totalCost
+            };
+
+            ViewBag.StripePublishKey = Secrets.STRIPES_PUBLIC_KEY;
+            return View(artEvent);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PaymentConfirmation(string stripeToken, string description, string stripeEmail, int amount, ArtistEvent artistEvent)
+        {
+            StripeConfiguration.ApiKey = Secrets.STRIPES_API_KEY;
+
+            var myCharge = new ChargeCreateOptions
+            {
+                Amount = amount,
+                Currency = "USD",
+                ReceiptEmail = stripeEmail,
+                Description = description,
+                Source = stripeToken,
+                Capture = true
+            };
+            var chargeService = new ChargeService();
+
+            try
+            {
+                Charge stripeCharge = chargeService.Create(myCharge);
+                _context.ArtistEvents.Add(artistEvent);
+                await _context.SaveChangesAsync();
+
+                double amountPaid = Convert.ToDouble(myCharge.Amount);
+                ViewBag.PaymentInfo = myCharge;
+                ViewBag.PaymentTotal = Math.Round(amountPaid / 100, 2);
+                return View(true);
+            }
+            catch (Exception exceptionThrown)
+            {
+                ViewBag.Exception = exceptionThrown;
+                return View(false);
+            }
+        }
+
+        public async Task<IActionResult> Schedule(DateTime? dayToCheck = null)
+        {
+            var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
+            
+            var today = DateTime.Now;
+            var yesterday = today.AddDays(-1);
+
+            if (dayToCheck == null)
+            {
+                dayToCheck = today;
+            }
+
+            var businessEvents = await _context.BusinessEvents.Where(b => b.ArtistId.Equals(artist.Id) && b.StartTime.Day > yesterday.Day).Include(b => b.Business).ToListAsync();
+            var artistEvents = await _context.ArtistEvents.Where(a => a.ArtistId.Equals(artist.Id) && a.StartTime.Day > yesterday.Day).Include(b => b.Business).ToListAsync();
+            var artistEventsToday = artistEvents.Where(a => a.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
+
+            ViewData["DayToCheck"] = dayToCheck;
+            ViewData["BusinessEvents"] = businessEvents;
+            ViewData["BusinessEventsToday"] = businessEvents.Where(b => b.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
+            ViewData["ArtistEvents"] = artistEvents;
+            return View(artistEventsToday);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Schedule(DateTime dayToCheck)
+        {
+            return RedirectToAction("Schedule", new { dayToCheck = dayToCheck });
         }
 
 
