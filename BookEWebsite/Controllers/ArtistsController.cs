@@ -272,6 +272,7 @@ namespace BookEWebsite.Controllers
             businessAvailabilities = await _context.BusinessAvailabilities.Where(b => b.BusinessId.Equals(id) && b.DayOfWeek.Equals(dayToCheckDT.DayOfWeek.ToString())).ToListAsync();
 
             business.DayToCheck = dayToCheckDT;
+            ViewData["Error"] = error;
             ViewData["BusinessAvailabilities"] = businessAvailabilities;
             return View(business);
         }
@@ -284,6 +285,8 @@ namespace BookEWebsite.Controllers
             return RedirectToAction("BusinessOpenings", new { id = id, dayToCheck = dayToString });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> BookTime(int? id, Business bModel)
         {
             if (ModelState.IsValid)

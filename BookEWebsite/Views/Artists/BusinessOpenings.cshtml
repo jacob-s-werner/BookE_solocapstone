@@ -47,6 +47,7 @@
         </form>
     </div>
     <div class="col-md-4">
+        <h6 style="color:red">@ViewBag.Error</h6>
         <form asp-action="BookTime">
             <input type="hidden" asp-for="@Model.Id" />
             <input type="hidden" asp-for="@Model.DayToCheck" />
