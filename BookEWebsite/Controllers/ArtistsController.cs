@@ -343,7 +343,7 @@ namespace BookEWebsite.Controllers
                 }
             }
 
-            return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value});
+            return RedirectToAction("BusinessOpenings", new { id = bModel.Id, dayToCheck = bModel.DayToCheck.Value });
         }
 
         public async Task<IActionResult> CreateEvent(int bId, DateTime bookStart, DateTime bookEnd, string error = null)
@@ -353,7 +353,7 @@ namespace BookEWebsite.Controllers
             var artist = await _context.Artists.Where(c => c.IdentityUserId == userId).SingleOrDefaultAsync();
             var business = await _context.Businesses.Where(b => b.Id.Equals(bId)).SingleOrDefaultAsync();
 
-            double totalHours = (bookStart - bookEnd).TotalHours;
+            double totalHours = (bookEnd - bookStart).TotalHours;
             if (bookStart.DayOfWeek.ToString() == "Saturday" || bookStart.DayOfWeek.ToString() == "Sunday")
             {
                 totalCost = (totalHours * business.WeekendHourlyCost.Value);
@@ -372,8 +372,44 @@ namespace BookEWebsite.Controllers
                 Cost = totalCost
             };
 
+            ViewBag.StripePublishKey = Secrets.STRIPES_PUBLIC_KEY;
             return View(artEvent);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> PaymentConfirmation(string stripeToken, string description, string stripeEmail, int amount, ArtistEvent artistEvent)
+        {
+            StripeConfiguration.ApiKey = Secrets.STRIPES_API_KEY;
+
+            var myCharge = new ChargeCreateOptions
+            {
+                Amount = amount,
+                Currency = "USD",
+                ReceiptEmail = stripeEmail,
+                Description = description,
+                Source = stripeToken,
+                Capture = true
+            };
+            var chargeService = new ChargeService();
+
+            try
+            {
+                Charge stripeCharge = chargeService.Create(myCharge);
+                _context.ArtistEvents.Add(artistEvent);
+                await _context.SaveChangesAsync();
+
+                double amountPaid = Convert.ToDouble(myCharge.Amount);
+                ViewBag.PaymentInfo = myCharge;
+                ViewBag.PaymentTotal = Math.Round(amountPaid / 100, 2);
+                return View(true);
+            }
+            catch (Exception exceptionThrown)
+            {
+                ViewBag.Exception = exceptionThrown;
+                return View(false);
+            }
+        }
+
 
 
     }
