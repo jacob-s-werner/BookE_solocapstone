@@ -54,7 +54,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="EventDescription" class="control-label"></label>
-                <input asp-for="EventDescription" style="height:200px; font-size:14pt;" class="form-control" />
+                <textarea asp-for="EventDescription" id="EventDescription" rows="3" placeholder="Type your description here..."></textarea>
                 <span asp-validation-for="EventDescription" class="text-danger"></span>
             </div>
             @*<div class="form-group">
