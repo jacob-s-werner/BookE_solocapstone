@@ -10,9 +10,7 @@
     <form method="post" asp-action="Schedule">
         <label for="search-date">Search Date</label>
         <input type="date" id="dayToCheck" name="dayToCheck">
-        <div class="form-group">
-            <input type="submit" value="Search" class="btn btn-primary" />
-        </div>
+        <input type="submit" value="Search" class="btn btn-primary" />
     </form>
 </div>
 
@@ -23,7 +21,7 @@
     }
     else
     {
-        @: Openings for :
+        @: Schedule for:
     }
     @ViewBag.DayToCheck.DayOfWeek, @ViewBag.DayToCheck.ToShortDateString()
 </h2>
