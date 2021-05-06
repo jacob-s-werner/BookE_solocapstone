@@ -444,7 +444,7 @@ namespace BookEWebsite.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Schedule(DateTime dayToCheck)
+        public ActionResult Schedule(DateTime dayToCheck)
         {
             return RedirectToAction("Schedule", new { dayToCheck = dayToCheck });
         }

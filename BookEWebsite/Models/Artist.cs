@@ -37,5 +37,11 @@ namespace BookEWebsite.Models
         public double? CenterLatitude { get; set; }
         [NotMapped]
         public double? CenterLongitude { get; set; }
+        [NotMapped]
+        public DateTime? DayToCheck { get; set; }
+        [NotMapped]
+        public DateTime? StartTime { get; set; }
+        [NotMapped]
+        public DateTime? EndTime { get; set; }
     }
 }
