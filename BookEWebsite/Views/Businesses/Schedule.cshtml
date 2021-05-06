@@ -30,7 +30,7 @@
 <hr />
 
 <div>
-@if (Model.Count() > 0 || ViewBag.BusinessEventsToday.Count > 0)
+@if (Model.Count() > 0 || ViewBag.ArtistEventsToday.Count > 0)
 {
     @if (Model.Count() > 0)
     {
@@ -94,10 +94,10 @@
             </table>
         </div>
     }
-    @if (ViewBag.BusinessEventsToday.Count > 0)
+    @if (ViewBag.ArtistEventsToday.Count > 0)
     {
 <div class="row">
-    <h4>Businesses That Booked You</h4>
+    <h4>Artists That Booked You</h4>
     <table class="table">
         <thead>
             <tr>
@@ -126,7 +126,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in ViewBag.BusinessEventsToday)
+            @foreach (var item in ViewBag.ArtistEventsToday)
             {
                 <tr>
                     <td>
@@ -173,7 +173,7 @@ else
         @if (ViewBag.ArtistEvents.Count > 0)
         {
             <div class="row">
-                <h4>Events You Booked</h4>
+                <h4>Artists That Booked You</h4>
                 <table class="table">
                     <thead>
                         <tr>
@@ -235,7 +235,7 @@ else
         @if (ViewBag.BusinessEvents.Count > 0)
         {
             <div class="row">
-                <h4>Businesses That Booked You</h4>
+                <h4>Events You Booked</h4>
                 <table class="table">
                     <thead>
                         <tr>

@@ -41,9 +41,9 @@
     </table>
 </div>
 
-
+<h1>Artists Looking For Gigs</h1>
 <div class="container">
-    @if (ViewBag.ArtistAvailabilties.Count > 0)
+    @if (ViewBag.Artists.Count > 0)
     {
         <table class="table">
             <thead>
@@ -69,35 +69,31 @@
                 </tr>
             </thead>
             <tbody>
-
-                @foreach (ArtistAvailability item in ViewBag.ArtistAvailabilities)
+                @foreach (Artist artist in ViewBag.Artists)
                 {
-                    if (item.Artist.LookingForGigs)
-                    {
-                        <tr>
-                            <td>
-                                @item.Artist.GroupName
-                            </td>
-                            <td>
-                                @item.Artist.Specialization
-                            </td>
-                            <td>
-                                @item.Artist.Description
-                            </td>
-                            <td>
-                                $@item.Artist.HourlyCost
-                            </td>
-                            <td>
-                                $@item.Artist.WeekendHourlyCost
-                            </td>
-                            <td>
-                                @item.Artist.Address.City, @item.Artist.Address.State
-                            </td>
-                            <td>
-                                <a asp-action="ArtistOpenings" asp-route-id="@item.Id">See Availability</a> |
-                            </td>
-                        </tr>
-                    }
+                    <tr>
+                        <td>
+                            @artist.GroupName
+                        </td>
+                        <td>
+                            @artist.Specialization
+                        </td>
+                        <td>
+                            @artist.Description
+                        </td>
+                        <td>
+                            $@artist.HourlyCost
+                        </td>
+                        <td>
+                            $@artist.WeekendHourlyCost
+                        </td>
+                        <td>
+                            @artist.Address.City, @artist.Address.State
+                        </td>
+                        <td>
+                            <a asp-action="ArtistOpenings" asp-route-id="@artist.Id">See Availability</a> |
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>

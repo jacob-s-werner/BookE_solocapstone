@@ -47,8 +47,8 @@ namespace BookEWebsite.Views
             {
                 return RedirectToAction(nameof(Edit));
             }
-
-            ViewData["ArtistAvailabilities"] = await _context.ArtistAvailabilities.Include(b => b.Artist).Include(b => b.Artist.Address).ToListAsync();
+            List<ArtistAvailability> artistAvailabilities = new List<ArtistAvailability>();
+            ViewData["Artists"] = await _context.Artists.Where(a => a.LookingForGigs).Include(a => a.Address).ToListAsync();
             return View(business);
         }
 
@@ -424,12 +424,13 @@ namespace BookEWebsite.Views
             var businessEvents = await _context.BusinessEvents.Where(b => b.BusinessId.Equals(business.Id) && b.StartTime.Day > yesterday.Day).Include(b => b.Artist).ToListAsync();
             var artistEvents = await _context.ArtistEvents.Where(a => a.BusinessId.Equals(business.Id) && a.StartTime.Day > yesterday.Day).Include(b => b.Artist).ToListAsync();
             var artistEventsToday = artistEvents.Where(a => a.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
-
+            var businessEventsToday = businessEvents.Where(b => b.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
+            
             ViewData["DayToCheck"] = dayToCheck;
             ViewData["BusinessEvents"] = businessEvents;
-            ViewData["BusinessEventsToday"] = businessEvents.Where(b => b.StartTime.Day.Equals(dayToCheck.Value.Day)).ToList();
+            ViewData["ArtistEventsToday"] = artistEventsToday;
             ViewData["ArtistEvents"] = artistEvents;
-            return View(artistEventsToday);
+            return View(businessEventsToday);
         }
 
         [HttpPost]
