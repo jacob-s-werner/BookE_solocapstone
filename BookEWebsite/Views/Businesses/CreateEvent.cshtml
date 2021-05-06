@@ -8,7 +8,7 @@
 <h1>Create Business Event</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-lg-4">
         <form asp-action="PaymentConfirmation">
             <input type="hidden" asp-for="@Model.Id" />
             <input type="hidden" asp-for="@Model.BusinessId" value="@Model.Business.Id" />
@@ -21,25 +21,25 @@
                 <h4>Event Info</h4>
                 <hr />
                 <dl class="row">
-                    <dt class="col-sm-2">
+                    <dt class="col-sm-5">
                         @Html.DisplayNameFor(model => model.Artist.GroupName)
                     </dt>
                     <dd class="col-sm-10">
                         @Html.DisplayFor(model => model.Artist.GroupName)
                     </dd>
-                    <dt class="col-sm-2">
+                    <dt class="col-sm-5">
                         @Html.DisplayNameFor(model => model.StartTime)
                     </dt>
                     <dd class="col-sm-10">
                         @Model.StartTime.ToShortTimeString()
                     </dd>
-                    <dt class="col-sm-2">
+                    <dt class="col-sm-5">
                         @Html.DisplayNameFor(model => model.EndTime)
                     </dt>
                     <dd class="col-sm-10">
                         @Model.EndTime.ToShortTimeString()
                     </dd>
-                    <dt class="col-sm-2">
+                    <dt class="col-sm-5">
                         @Html.DisplayNameFor(model => model.Cost)
                     </dt>
                     <dd class="col-sm-10">
