@@ -48,6 +48,7 @@ namespace BookEWebsite.Views
                 return RedirectToAction(nameof(Edit));
             }
 
+            ViewData["ArtistAvailabilities"] = await _context.ArtistAvailabilities.Include(b => b.Artist).Include(b => b.Artist.Address).ToListAsync();
             return View(business);
         }
 
