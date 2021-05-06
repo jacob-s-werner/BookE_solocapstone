@@ -1,0 +1,23 @@
+﻿@model bool
+@{if (Model.Equals(true))
+    {
+        ViewData["Title"] = "Payment Successful!";
+
+        <h1 style="color:green;">Payment Successful and Event Booked!</h1>
+        <ul>
+            <li>Amount Paid: $@ViewBag.PaymentTotal</li>
+            <li>Receipt Email: @ViewBag.PaymentInfo.ReceiptEmail  </li>
+            <li>Description: @ViewBag.PaymentInfo.Description </li>
+        </ul>
+    }
+    else
+    {
+        ViewData["Title"] = "Payment Failed";
+
+        <h1 style="color:red;">Payment failed! Event not Booked...</h1>
+        <p> @ViewBag.Exception </p>
+    }
+}
+<div>
+    <a asp-action="Index">Back to HomePage</a>
+</div>
