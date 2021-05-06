@@ -58,9 +58,18 @@
             center: new google.maps.LatLng( @Model.CenterLatitude,@Model.CenterLongitude),
             zoom: 13,
             styles: [
-                { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
-                { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
-                { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+                {
+                    elementType: "geometry",
+                    stylers: [{ color: "#242f3e" }]
+                },
+                {
+                    elementType: "labels.text.stroke",
+                    stylers: [{ color: "#242f3e" }]
+                },
+                {
+                    elementType: "labels.text.fill",
+                    stylers: [{ color: "#746855" }]
+                },
                 {
                     featureType: "administrative.locality",
                     elementType: "labels.text.fill",
