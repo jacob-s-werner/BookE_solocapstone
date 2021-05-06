@@ -1,0 +1,307 @@
+﻿@model IEnumerable<BookEWebsite.Models.BusinessEvent>
+
+@{
+    ViewData["Title"] = "Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Schedule</h1>
+<div class="col-md-4">
+    <form method="post" asp-action="Schedule">
+        <label for="search-date">Search Date</label>
+        <input type="date" id="dayToCheck" name="dayToCheck">
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+<h2>
+    @if (DateTime.Now.Day.Equals(ViewBag.DayToCheck.Day))
+    {
+        @: Today's Schedule! :
+    }
+    else
+    {
+        @: Openings for :
+    }
+    @ViewBag.DayToCheck.DayOfWeek, @ViewBag.DayToCheck.ToShortDateString()
+</h2>
+<hr />
+
+<div>
+@if (Model.Count() > 0 || ViewBag.BusinessEventsToday.Count > 0)
+{
+    @if (Model.Count() > 0)
+    {
+        <div class="row">
+            <h4>Events You Booked</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EventName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EventDescription)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.StartTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EndTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TimeBooked)
+                        </th>
+                        <th>
+                            Amount Paid
+                        </th>
+                        <th>
+                            Artist/Group Name
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.EventName
+                            </td>
+                            <td>
+                                @item.EventDescription
+                            </td>
+                            <td>
+                                @item.StartTime.ToShortTimeString()
+                            </td>
+                            <td>
+                                @item.EndTime.ToShortTimeString()
+                            </td>
+                            <td>
+                                @item.TimeBooked
+                            </td>
+                            <td>
+                                $ @Math.Round(item.Cost, 2)
+                            </td>
+                            <td>
+                                @item.Artist.GroupName
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    @if (ViewBag.BusinessEventsToday.Count > 0)
+    {
+<div class="row">
+    <h4>Businesses That Booked You</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.EventName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EventDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StartTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EndTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TimeBooked)
+                </th>
+                <th>
+                    Amount Paid
+                </th>
+                <th>
+                    Artist/Group Name
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in ViewBag.BusinessEventsToday)
+            {
+                <tr>
+                    <td>
+                        @item.EventName
+                    </td>
+                    <td>
+                        @item.EventDescription
+                    </td>
+                    <td>
+                        @item.StartTime.ToShortTimeString()
+                    </td>
+                    <td>
+                        @item.EndTime.ToShortTimeString()
+                    </td>
+                    <td>
+                        @item.TimeBooked
+                    </td>
+                    <td>
+                        $ @Math.Round(item.Cost, 2)
+                    </td>
+                    <td>
+                        @item.Artist.GroupName
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+    }
+        
+}
+else
+{
+    <h4><i>You have no events scheduled...</i></h4>
+}
+</div>
+
+<div>
+    <br />
+    <h2>All Upcoming Events</h2>
+    <hr />
+    @if (ViewBag.ArtistEvents.Count > 0 || ViewBag.BusinessEvents.Count > 0)
+    {
+        @if (ViewBag.ArtistEvents.Count > 0)
+        {
+            <div class="row">
+                <h4>Events You Booked</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.EventName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.EventDescription)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.StartTime)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.EndTime)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TimeBooked)
+                            </th>
+                            <th>
+                                Amount Paid
+                            </th>
+                            <th>
+                                Artist/Group Name
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.ArtistEvents)
+                        {
+                            <tr>
+                                <td>
+                                    @item.EventName
+                                </td>
+                                <td>
+                                    @item.EventDescription
+                                </td>
+                                <td>
+                                    @item.StartTime
+                                </td>
+                                <td>
+                                    @item.EndTime
+                                </td>
+                                <td>
+                                    @item.TimeBooked
+                                </td>
+                                <td>
+                                    $ @Math.Round(item.Cost, 2)
+                                </td>
+                                <td>
+                                    @item.Artist.GroupName
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        @if (ViewBag.BusinessEvents.Count > 0)
+        {
+            <div class="row">
+                <h4>Businesses That Booked You</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.EventName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.EventDescription)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.StartTime)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.EndTime)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.TimeBooked)
+                            </th>
+                            <th>
+                                Amount Paid
+                            </th>
+                            <th>
+                                Artist/Group Name
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.BusinessEvents)
+                        {
+                            <tr>
+                                <td>
+                                    @item.EventName
+                                </td>
+                                <td>
+                                    @item.EventDescription
+                                </td>
+                                <td>
+                                    @item.StartTime
+                                </td>
+                                <td>
+                                    @item.EndTime
+                                </td>
+                                <td>
+                                    @item.TimeBooked
+                                </td>
+                                <td>
+                                    $ @Math.Round(item.Cost, 2)
+                                </td>
+                                <td>
+                                    @item.Artist.GroupName
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+    }
+    else
+    {
+        <h4><i>You have no upcoming events...</i></h4>
+    }
+</div>
+
+<div>
+    <a asp-action="Index">Back to HomePage</a>
+</div>
