@@ -7,36 +7,38 @@
 
 <div class="row">
     <div class="col">
+        <h1><i>Group: </i></h1>
         <h1>@Model.GroupName </h1>
         <h4>(@Model.FirstName @Model.LastName)</h4>
     </div>
     <div class="col">
         <br />
-        <h4> Located in @Model.Address.City, @Model.Address.State</h4>
+        <h3><i>Located in:</i></h3>
+        <h4>@Model.Address.City, @Model.Address.State</h4>
     </div>
     <div  class="col">
         <br />
         <div class="row">
-            <h3>Specialization: </h3><h5>@Model.Specialization</h5>
+            <h3><i>Specialization: </i>@Model.Specialization</h3>
         </div>
         <div class="row">
-            <h3>Group Size: </h3> <h5>@Model.SizeOfGroup</h5>
+            <h3><i>Group Size:</i>@Model.SizeOfGroup</h3>
         </div>
     </div>
     <div class="col">
-        <h3>Costs:</h3>
-        <h6>Daily - <b>$@Model.HourlyCost</b>/hr</h6>
-        <h6>Weekend - <b>$@Model.WeekendHourlyCost</b>/hr</h6>
+        <h3><i>Costs:</i></h3>
+        <h4>Daily - <b>$@Model.HourlyCost</b>/hr</h4>
+        <h4>Weekend - <b>$@Model.WeekendHourlyCost</b>/hr</h4>
     </div>
 </div>
 <h4>
     @if (DateTime.Now.Equals(Model.DayToCheck.Value))
     {
-        @: Today's Openings! :
+        @: Today's Availability! :
     }
     else
     {
-        @: Openings for :
+        @: Availability for :
     }
     @Model.DayToCheck.Value.DayOfWeek, @Model.DayToCheck.Value.ToShortDateString()
 </h4>

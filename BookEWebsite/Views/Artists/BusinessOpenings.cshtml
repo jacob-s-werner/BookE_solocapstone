@@ -7,10 +7,11 @@
 
 <div class="row">
     <div class="col">
+        <h1><i>Business Name:</i></h1>
         <h1>@Model.Name</h1>
     </div>
     <div class="col">
-        <br />
+        <h3><i>Location: </i></h3>
         <h4> @Model.Address.Street1 </h4>
         @if (@Model.Address.Street2 != null)
         {
@@ -19,9 +20,9 @@
         <h4> @Model.Address.City, @Model.Address.State @Model.Address.ZipCode </h4>
     </div>
     <div class="col">
-        <h3>Costs:</h3>
-        <h6>Daily - <b>$@Model.HourlyCost</b>/hr</h6>
-        <h6>Weekend - <b>$@Model.WeekendHourlyCost</b>/hr</h6>
+        <h3><i>Costs:</i></h3>
+        <h4>Daily - <b>$@Model.HourlyCost</b>/hr</h4>
+        <h4>Weekend - <b>$@Model.WeekendHourlyCost</b>/hr</h4>
     </div>
 </div>
 <h4>

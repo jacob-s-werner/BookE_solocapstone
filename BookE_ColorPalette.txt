@@ -1,0 +1,4 @@
+DarkestBlue - #1a1a2e
+DarkBlue - #16213e
+Blue - #0f3460
+Pinkish - #e94560

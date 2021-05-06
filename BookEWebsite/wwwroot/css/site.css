@@ -27,23 +27,23 @@ a {
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+  font-size: 16px;
 }
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 
 .border-top {
-  border-top: 1px solid #e5e5e5;
+    border-top: 1px solid black !important;
 }
 .border-bottom {
-  border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid black !important;
 }
 
 .box-shadow {
-    box-shadow: #1861ac;
+    box-shadow: #1861ac !important;
 }
 
 button.accept-policy {
@@ -107,4 +107,7 @@ th, b, label {
 }
 h1,h2,h3,h4,h5,h6 {
     color: #ff7e93;
+}
+.navbar-toggler {
+    background-color: #00db98;
 }
