@@ -12,11 +12,12 @@
     </div>
     <div class="col">
         <br />
-        <h4> Located in </h4>
-        <h4> @Model.Address.City, @Model.Address.State</h4>
+        <h4> Located in @Model.Address.City, @Model.Address.State</h4>
     </div>
-    <div>
+    <div  class="col">
+        <br />
         <h3>Specialization: @Model.Specialization</h3>
+        <h3>Group Size: @Model.SizeOfGroup</h3>
     </div>
     <div class="col">
         <h3>Costs:</h3>
@@ -71,7 +72,7 @@
 
 <div class="row">
     <hr />
-    @if (ViewBag.BusinessAvailabilities.Count > 0)
+    @if (ViewBag.ArtistAvailabilities.Count > 0)
     {
         <table class="table">
             <thead>
